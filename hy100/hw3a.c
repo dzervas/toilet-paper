@@ -7,10 +7,10 @@ unsigned int input();
 unsigned char masker(unsigned int mask, unsigned int *player);
 char show(unsigned char i);
 
-int main(int argc, int argv[]) {
+int main(int argc, char *argv[]) {
 	unsigned char i, count = 0;
 
-	while (!check()) {
+	while (1) {
 		/* Check for (very) wild error */
 		if ((playerX & playerO) != 0) {
 			printf("WOW. That's very weird... X: %u O: %u", playerX, playerO);
@@ -32,7 +32,9 @@ int main(int argc, int argv[]) {
 		}
 
 		/* 0 is player X, 1 is player O*/
-		if (count) {
+		if (count == 2)
+			break;
+		else if (count) {
 			printf("Player O: ");
 			playerO |= input();
 		} else {
@@ -42,49 +44,54 @@ int main(int argc, int argv[]) {
 
 		/* Cycle "count" between 0 and 1 by xoring it with 1 */
 		count ^= 1;
+
+		if (!check())
+			count = 2;
 	}
 
 	return 0;
 }
 
 unsigned char check() {
-	int *player = &playerX;
-	unsigned char win, i, j;
+	unsigned int *player = &playerX;
+	unsigned char i, j;
 
 	for (i = 0; i < 2; i++) {
-		win = 0;
 		if (i)
 			player = &playerO;
 
 		/* I use win "masks" that let me automate the process of checking rows or
 		columns won, by shifting them accoridngly. I bitwise AND the shifted mask
 		with each player's array to check if he has won.*/
-		/* Check for 000000111 win mask, row mask */
+		/* Check for 000000111 = 7 win mask, row mask */
 		for (j = 0; j < 3; j++) {
-			if (masker((0b111 << 3*j), player))
+			if (masker((7 << 3*j), player))
 				return 0;
 		}
 
-		/* Check for 001001001 win mask, column mask */
+		/* Check for 001001001 = 73 win mask, column mask */
 		for (j = 0; j < 3; j++) {
-			if (masker((0b001001001 << j), *player))
+			if (masker((73 << j), player))
 				return 0;
 		}
 
 		/* Diagonal wins  are just 1 condition, so there is no reason shifting them */
-		/* Check for left diagonal win */
-		if (masker(0b100010001, *player))
+		/* Check for 0b100010001 = 273 win mask, left diagonal mask */
+		if (masker(273, player))
 			return 0;
 
-		/* Check for right diagonal win */
-		if (masker(0b001010100 , *player))
+		/* Check for 0b001010100= 84 win mask, right diagonal mask */
+		printf("%d\n", *player);
+		if (masker(84, player)) {
 			return 0;
+		}
 	}
 
 	/* If the matrix is filled and none has won, it's a tie */
-	if ((playerX | playerO) == 0b111111111) {
+	/* 111111111 = 511*/
+	if ((playerX | playerO) == 511) {
 		printf("It's a tie!\n");
-		return 0
+		return 0;
 	}
 
 	return 1;
@@ -93,7 +100,10 @@ unsigned char check() {
 unsigned int input() {
 	unsigned int buffer, mixed = playerX | playerO;
 
-	scanf(" %u", &buffer);
+	if (scanf(" %u", &buffer) != 1) {
+		printf("Error, input must be number: ");
+		return input();
+	}
 
 	if (buffer < 1 || buffer > 9) {
 		printf("Error, number must be 1-9: ");
@@ -112,9 +122,9 @@ unsigned int input() {
 	return (1 << buffer);
 }
 
-unsigned char masker(unsigned int mask, unsigned int *player) {
-	if (mask & *player == mask) {
-		printf("Player %c wins!", (player == &playerX) ? 'X' : 'O');
+unsigned char masker(unsigned int mask, unsigned int *var) {
+	if ((mask & *var) == mask) {
+		printf("Player %c wins!\n", (var == &playerX) ? 'X' : 'O');
 		return 1;
 	}
 
