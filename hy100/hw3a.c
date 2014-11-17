@@ -2,7 +2,9 @@
 /* Instead of a regular array, I use 2 ints as 2 boolean arrays that hold each player's moves */
 unsigned int playerX = 0, playerO = 0;
 
+unsigned char check();
 unsigned int input();
+unsigned char masker(unsigned int mask, unsigned int *player);
 char show(unsigned char i);
 
 int main(int argc, int argv[]) {
@@ -59,31 +61,24 @@ unsigned char check() {
 		with each player's array to check if he has won.*/
 		/* Check for 000000111 win mask, row mask */
 		for (j = 0; j < 3; j++) {
-			if (((0b111 << 3*j) & *player) >> 3*j == 0b111) {
-				printf("Player %c wins!", i ? 'O' : 'X');
+			if (masker((0b111 << 3*j), player))
 				return 0;
-			}
 		}
 
 		/* Check for 001001001 win mask, column mask */
 		for (j = 0; j < 3; j++) {
-			if (((0b001001001 << j) & *player) >> j == 0b001001001) {
-				printf("Player %c wins!", i ? 'O' : 'X');
+			if (masker((0b001001001 << j), *player))
 				return 0;
-			}
 		}
 
+		/* Diagonal wins  are just 1 condition, so there is no reason shifting them */
 		/* Check for left diagonal win */
-		if (0b100010001 & *player == 0b100010001) {
-			printf("Player %c wins!", i ? 'O' : 'X');
+		if (masker(0b100010001, *player))
 			return 0;
-		}
 
 		/* Check for right diagonal win */
-		if (0b001010100 & *player == 0b001010100) {
-			printf("Player %c wins!", i ? 'O' : 'X');
+		if (masker(0b001010100 , *player))
 			return 0;
-		}
 	}
 
 	/* If the matrix is filled and none has won, it's a tie */
@@ -116,7 +111,7 @@ unsigned int input() {
 
 	return (1 << buffer);
 }
-/*
+
 unsigned char masker(unsigned int mask, unsigned int *player) {
 	if (mask & *player == mask) {
 		printf("Player %c wins!", (player == &playerX) ? 'X' : 'O');
@@ -125,7 +120,6 @@ unsigned char masker(unsigned int mask, unsigned int *player) {
 
 	return 0;
 }
-*/
 
 /* Shows the appropriate character (X or O) for the place of the tic tac toe matrix */
 char show(unsigned char index) {
