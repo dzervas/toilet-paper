@@ -5,10 +5,13 @@
 #include <stdio.h>
 
 int main() {
-	unsigned int number;
+	unsigned int number, test;
 	
 	printf("Give the number of the players (up to 2^%d): ", (int)(sizeof(unsigned int) * 8));
-	scanf(" %ud", &number);
+	if (scanf(" %u", &number) != 1) {
+		printf("Error!");
+		return 1;
+	}
 
 	/*
 	 * If number = 2^m + l, then result 2l + 1
@@ -18,7 +21,7 @@ int main() {
 	 * l is the bits left in the number AFTER the most significant bit, so I AND the NOT
 	 * of test with the number to zero out the MSB.
 	 */
-	for (unsigned int test = (1 << (int)(8 * sizeof(unsigned int) - 2)); test > 0; test >>= 1) {
+	for (test = (1 << (int)(8 * sizeof(unsigned int) - 2)); test > 0; test >>= 1) {
 		if ((number & test) != 0) {
 			printf("The last player left is %d\n", 2 * (number & ~test) + 1);
 			break;
