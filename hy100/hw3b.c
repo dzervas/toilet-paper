@@ -1,25 +1,46 @@
 #include <stdio.h>
 
+unsigned char unique(int *array);
+
 int main(int argc, char *argv[]) {
-	unsigned char i, buffer[];
+	int input[9][9], buffer[9];
+	unsigned char i, j, k;
 
 	for (i = 0; i < 9; i++) {
-		if (sscanf("%d %d %d %d %d %d %d %d %d", buffer[i], buffer[i]+1, buffer[i]+2,
-					buffer[i]+3, buffer[i]+4, buffer[i]+5, buffer[i]+6,
-					buffer[i]+7, buffer[i]+8) != 8)
+		if (scanf("%d %d %d %d %d %d %d %d %d", &input[i][0], &input[i][1], &input[i][2],
+					&input[i][3], &input[i][4], &input[i][5], &input[i][6],
+					&input[i][7], &input[i][8]) != 8)
 			return 1;
 	}
 
 	for (i = 0; i < 9; i++) {
-		// Line check
-		if (!unique(buffer[i]))
+		/* Line check */
+		if (!unique(input[i]))
 			printf("Error in line: %d", i);
-		// Row check
-		// Block check
+
+		/* Row check */
+		for (j = 0; j < 9; j++)
+			buffer[j] = input[i][j];
+
+		if (!unique(buffer))
+			printf("Error in row: %d", i);
+
+		/* Block check */
+		if ((i % 3) == 0) {
+			for (j = 0; j < 9; j++) {
+				for (k = 0; k < 3; k++)
+					buffer[j] = input[i*3 + k][j];
+
+				if ((j % 3) == 2) {
+					if (!unique(buffer))
+						printf("Error in block: %d", 1 + i + j / 3);
+				}
+			}
+		}
 	}
 }
 
-unsigned char unique(unsigned char *array) {
+unsigned char unique(int *array) {
 	unsigned char buff[9], i;
 
 	for (i = 0; i < 9; i++)
