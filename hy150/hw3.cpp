@@ -8,7 +8,7 @@ typedef struct entry entry;
 struct entry {
 	char *First;
 	char *Last;
-	unsigned long int *Tel;
+	int Tel;
 };
 
 int sort(entry* table, unsigned int entries);
@@ -28,54 +28,58 @@ int main(int argc, char *argv[]) {
 
 	contacts = (entry *) malloc(sizeof(entry));
 	database = fopen(argv[0], "r");
+	buffer = (char *) calloc(BUFSIZ, sizeof(char));
+	contacts[0].First = (char *) calloc(BUFSIZ, sizeof(char));
+	contacts[0].Last = (char *) calloc(BUFSIZ, sizeof(char));
 
-	while (fscanf(database, " %s %s %lu ",
+	while (fgets(buffer, BUFSIZ, database) != NULL) {
+		sscanf(buffer, " %s %s %d",
 				contacts[entries].First,
 				contacts[entries].Last,
-				contacts[entries].Tel) == 3) {
-		printf("Added entry\n");
+				&contacts[entries].Tel);
 		entries++;
 
 		contacts = (entry *) realloc(contacts, (entries + 1) * sizeof(entry));
-		if (sort(contacts, entries) == 2) {
-			entries--;
-		}
 	}
+	printf("%d Entries\n", entries);
 
 	fclose(database);
 
-	buffer = (char *) calloc(1, sizeof(char));
 	first = (char *) calloc(1, sizeof(char));
 	last = (char *) calloc(1, sizeof(char));
 
-	while (scanf(" %c %s", &command, buffer) > -1) {
-// 		printf("%c", command);
+	printf("> ");
+	while (scanf(" %c", &command) > -1) {
 		switch (command) {
 			case 'd':
-				sscanf(buffer, "%s %s", first, last);
+				scanf("%s %s", first, last);
 				tmp = search(first, last, contacts, entries);
 				if (tmp != -1) {
-					free(&contacts[tmp]);
+					contacts = (entry *) realloc(contacts, entries * sizeof(entry));
+					entries--;
 					printf("Deleted %s %s\n",
 							contacts[tmp].First,
 							contacts[tmp].Last);
 				} else
 					printf("Contact not found!\n");
+				first = (char *) calloc(1, sizeof(char));
+				last = (char *) calloc(1, sizeof(char));
 				break;
 			case 'f':
-				while ((tmp = search(buffer, NULL, contacts, entries)) != -1)
-					printf("%s %s: %lu",
+				scanf("%s", first);
+				if ((tmp = search(first, NULL, contacts, entries)) != -1)
+					printf("%s %s: %d\n",
 							contacts[tmp].First,
 							contacts[tmp].Last,
-							*contacts[tmp].Tel);
+							contacts[tmp].Tel);
 				break;
 			case 'h':
 				printf("Usage: <command> <args...>\n");
 				printf("Commands:\n");
-				printf("d <First name> <Last name>\tDelete contact\n");
+				printf("d <First name> <Last name>\t\tDelete contact\n");
 				printf("f <Name>\t\t\t\tSearch contact with first or last name <name>\n");
 				printf("h\t\t\t\t\tImagination is the key\n");
-				printf("i <First name> <Last name> <Telephone> Insert or replace contact\n");
+				printf("i <First name> <Last name> <Telephone>\tInsert or replace contact\n");
 				printf("p\t\t\t\t\tPrint the address book\n");
 				printf("q\t\t\t\t\tQuit\n");
 				break;
@@ -83,11 +87,12 @@ int main(int argc, char *argv[]) {
 				sort(contacts, entries);
 				break;
 			case 'p':
+				printf("%d Entries\n", entries);
 				for (i = 0; i < entries; i++)
-					printf("%s %s: %lu",
+					printf("%s %s: %d\n",
 							contacts[i].First,
 							contacts[i].Last,
-							*contacts[i].Tel);
+							contacts[i].Tel);
 				break;
 			case 'q':
 				return 0;
@@ -104,9 +109,9 @@ int main(int argc, char *argv[]) {
 
 int sort(entry* table, unsigned int entries) {
 	/* Only the last entry is unsorted */
-	int place = -1, state, lstate, pstate, plstate;
+	int place = -1, state, lstate, pstate = -1, plstate = -1;
 	unsigned int i;
-	entry tmp;
+	entry *tmp;
 
 	/* Find the place to insert the entry */
 	for (i = 0; i < entries; i++) {
@@ -131,18 +136,23 @@ int sort(entry* table, unsigned int entries) {
 
 	if (state == 0 && lstate == 0) {
 		/* TODO: Here for bonus of multiple telephones */
-		*table[place].Tel = *table[entries - 1].Tel;
-		free(&table[entries - 1]);
-		table = (entry *) realloc(&table, (entries - 1) * sizeof(entry));
+		table[place].Tel = table[entries - 1].Tel;
+		table = (entry *) realloc(table, entries * sizeof(entry));
+		entries--;
 		return 2;
 	}
 
 	/* Place can't be negative here */
-	for (i = entries - 2; (int) i != place; i--) {
-		tmp = table[i + 1];
-		table[i + 1] = table [i];
-		table[i] = tmp;
+	tmp = (entry *) calloc(entries + 1, sizeof(entry));
+
+	for (i = 0; i < entries; i++) {
+		if ((int) i > place)
+			tmp[i] = table[i + 1];
+		else if ((int) i < place)
+			tmp[i] = table[i];
 	}
+
+	table = tmp;
 
 	return 0;
 }

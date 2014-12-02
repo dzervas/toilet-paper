@@ -1,8 +1,8 @@
 .SUFFIXES: .c
 
 FILES = $(patsubst %.cpp, %, $(wildcard *.cpp))
-CXXFLAGS = -g -Wall -O2
-CXX = g++
+CXXFLAGS = -g -Wall
+CXX = c++
 
 all: $(FILES)
 
