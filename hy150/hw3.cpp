@@ -40,6 +40,8 @@ int main(int argc, char *argv[]) {
 		entries++;
 
 		contacts = (entry *) realloc(contacts, (entries + 1) * sizeof(entry));
+		contacts[entries].First = (char *) calloc(BUFSIZ, sizeof(char));
+		contacts[entries].Last = (char *) calloc(BUFSIZ, sizeof(char));
 	}
 	printf("%d Entries\n", entries);
 
@@ -60,8 +62,11 @@ int main(int argc, char *argv[]) {
 					printf("Deleted %s %s\n",
 							contacts[tmp].First,
 							contacts[tmp].Last);
+					contacts[tmp].First = (char *) calloc(1, sizeof(char));
+					sort(contacts, entries);
 				} else
 					printf("Contact not found!\n");
+
 				first = (char *) calloc(1, sizeof(char));
 				last = (char *) calloc(1, sizeof(char));
 				break;
@@ -84,7 +89,17 @@ int main(int argc, char *argv[]) {
 				printf("q\t\t\t\t\tQuit\n");
 				break;
 			case 'i':
+				scanf("%s %s %d",
+						contacts[entries].First,
+						contacts[entries].Last,
+						&contacts[entries].Tel);
+
 				sort(contacts, entries);
+				entries++;
+
+				contacts = (entry *) realloc(contacts, (entries + 1) * sizeof(entry));
+				contacts[entries].First = (char *) calloc(BUFSIZ, sizeof(char));
+				contacts[entries].Last = (char *) calloc(BUFSIZ, sizeof(char));
 				break;
 			case 'p':
 				printf("%d Entries\n", entries);
@@ -95,28 +110,45 @@ int main(int argc, char *argv[]) {
 							contacts[i].Tel);
 				break;
 			case 'q':
+				database = fopen(argv[0], "w");
+				for (i = 0; i < entries; i++)
+					fprintf(database, "%s %s %d\n",
+							contacts[i].First,
+							contacts[i].Last,
+							contacts[i].Tel);
+				fclose(database);
 				return 0;
 				break;
 			default:
 				printf("Wrong command, press h for help\n");
+				break;
 		}
 
 		printf("> ");
 	}
+
+	database = fopen(argv[0], "w");
+	for (i = 0; i < entries; i++)
+		fprintf(database, "%s %s %d\n",
+				contacts[i].First,
+				contacts[i].Last,
+				contacts[i].Tel);
+	fclose(database);
 
 	return 0;
 }
 
 int sort(entry* table, unsigned int entries) {
 	/* Only the last entry is unsorted */
-	int place = -1, state, lstate, pstate = -1, plstate = -1;
+	int place = -1, state, lstate, pstate = -1, plstate = -1, counter;
 	unsigned int i;
 	entry *tmp;
 
 	/* Find the place to insert the entry */
 	for (i = 0; i < entries; i++) {
-		state = strcmp(table[i].First, table[entries - 1].First);
-		lstate = strcmp(table[i].Last, table[entries - 1].Last);
+		state = strcmp(table[i].First, table[entries].First);
+		lstate = strcmp(table[i].Last, table[entries].Last);
+		printf("%d %d%s\n", state, lstate, table[entries].First);
 
 		if ((pstate < 0 && state > 0) ||
 				(plstate < 0 && lstate > 0) ||
@@ -136,6 +168,7 @@ int sort(entry* table, unsigned int entries) {
 
 	if (state == 0 && lstate == 0) {
 		/* TODO: Here for bonus of multiple telephones */
+		printf("Hello %d\n", place);
 		table[place].Tel = table[entries - 1].Tel;
 		table = (entry *) realloc(table, entries * sizeof(entry));
 		entries--;
@@ -144,12 +177,12 @@ int sort(entry* table, unsigned int entries) {
 
 	/* Place can't be negative here */
 	tmp = (entry *) calloc(entries + 1, sizeof(entry));
+	counter = 0;
 
 	for (i = 0; i < entries; i++) {
-		if ((int) i > place)
-			tmp[i] = table[i + 1];
-		else if ((int) i < place)
-			tmp[i] = table[i];
+		if ((int) i > place || table[i + counter].First == NULL)
+			counter++;
+		tmp[i] = table[i + counter];
 	}
 
 	table = tmp;
