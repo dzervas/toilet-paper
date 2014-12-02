@@ -20,10 +20,11 @@ int main(int argc, char *argv[]) {
 	unsigned int entries = 0, i;
 	entry *contacts;
 	FILE *database;
-	argc--; argv++;
 
+	argc--;
 	if (argc < 1)
 		printf("Usage: ./hw3 <database>");
+	argv++;
 
 	contacts = (entry *) malloc(sizeof(entry));
 	database = fopen(argv[0], "r");
@@ -103,8 +104,8 @@ int main(int argc, char *argv[]) {
 
 int sort(entry* table, unsigned int entries) {
 	/* Only the last entry is unsorted */
-	int place = -1;
-	unsigned int i, state, lstate, pstate, plstate;
+	int place = -1, state, lstate, pstate, plstate;
+	unsigned int i;
 	entry tmp;
 
 	/* Find the place to insert the entry */

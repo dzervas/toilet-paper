@@ -2,7 +2,7 @@
 
 FILES = $(patsubst %.cpp, %, $(wildcard *.cpp))
 CXXFLAGS = -g -Wall -O2
-CXX = c++
+CXX = g++
 
 all: $(FILES)
 
@@ -15,7 +15,7 @@ all: $(FILES)
 	@$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 
 clean:
-	rm -f $(FILES)
+	rm -rf $(FILES) *.dSYM
 
 error:
 	@echo "Please specify name of project to build (source file without .cpp extension)"
