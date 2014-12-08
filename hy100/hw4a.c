@@ -42,7 +42,7 @@ void towers(int num, char from, char to, char other) {
 		cols[CAPINT(to)][numcols[CAPINT(to)]] = num;
 		numcols[CAPINT(to)]++;
 
-		printf("%c -> %c\n", from, to);
+		printf("%c -> %c\n\n", from, to);
 		show();
 
 		return;
@@ -56,7 +56,7 @@ void towers(int num, char from, char to, char other) {
 	cols[CAPINT(to)][numcols[CAPINT(to)]] = num;
 	numcols[CAPINT(to)]++;
 
-	printf("%c -> %c\n", from, to);
+	printf("%c -> %c\n\n", from, to);
 	show();
 
 	towers(num - 1, other, to, from);
@@ -98,5 +98,8 @@ void show() {
 		printf("\n");
 	}
 
-	printf("\n");
+	for (i = 0; i < (RANGE(maxnum) * 3); i++)
+		printf("-");
+
+	printf("\n\n");
 }
