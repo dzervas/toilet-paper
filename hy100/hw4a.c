@@ -1,6 +1,11 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+/* Formula to find the range to show the numbers */
+#define RANGE(x)		(2 * x - 1)
+/* Formula to transform capital letters to integers*/
+#define CAPINT(x)		(x - 65)
+
 int maxnum, *cols[3], numcols[3] = { 0 };
 
 void show();
@@ -31,11 +36,11 @@ int main() {
 
 void towers(int num, char from, char to, char other) {
 	if(num == 1) {
-		numcols[from - 65]--;
-		cols[from - 65][numcols[from - 65]] = 0;
+		numcols[CAPINT(from)]--;
+		cols[CAPINT(from)][numcols[CAPINT(from)]] = 0;
 
-		cols[to - 65][numcols[to - 65]] = num;
-		numcols[to - 65]++;
+		cols[CAPINT(to)][numcols[CAPINT(to)]] = num;
+		numcols[CAPINT(to)]++;
 
 		printf("%c -> %c\n", from, to);
 		show();
@@ -45,11 +50,11 @@ void towers(int num, char from, char to, char other) {
 
 	towers(num - 1, from, other, to);
 
-	numcols[from - 65]--;
-	cols[from - 65][numcols[from - 65]] = 0;
+	numcols[CAPINT(from)]--;
+	cols[CAPINT(from)][numcols[CAPINT(from)]] = 0;
 
-	cols[to - 65][numcols[to - 65]] = num;
-	numcols[to - 65]++;
+	cols[CAPINT(to)][numcols[CAPINT(to)]] = num;
+	numcols[CAPINT(to)]++;
 
 	printf("%c -> %c\n", from, to);
 	show();
@@ -58,19 +63,19 @@ void towers(int num, char from, char to, char other) {
 }
 
 void show() {
-	int i, j;
+	int i, j, k;
 
-	for (i = 0; i < (((maxnum - 1) * 2 + 1) * 3 + 2); i++) {
-		if ((i % ((maxnum - 1) * 2 + 1)) / 2 == maxnum - 1)
-			printf("%c", 'A' + (i / ((maxnum - 1) * 2 + 1)));
+	for (i = 0; i < (RANGE(maxnum) * 3); i++) {
+		if (i % RANGE(maxnum) == RANGE(maxnum) / 2)
+			printf("%c", 'A' + (i / RANGE(maxnum)));
 		else
 			printf(" ");
 	}
 
 	printf("\n\n");
 
-	for (i = 0; i < (((maxnum - 1) * 2 + 1) * 3 + 2); i++) {
-		if ((i % ((maxnum - 1) * 2 + 1)) / 2 == maxnum - 1)
+	for (i = 0; i < (RANGE(maxnum) * 3); i++) {
+		if (i % RANGE(maxnum) == RANGE(maxnum) / 2)
 			printf("|");
 		else
 			printf(" ");
@@ -79,14 +84,16 @@ void show() {
 	printf("\n");
 
 	for (j = maxnum - 1; j >= 0; j--) {
-		for (i = 0; i < (((maxnum - 1) * 2 + 1) * 3 + 2); i++) {
-			if (((i % ((maxnum - 1) * 2 + 1)) / 2 == maxnum - 1)) {
-				if (cols[i / ((maxnum - 1) * 2 + 1)][j] != 0)
-					printf("%d", cols[i / ((maxnum - 1) * 2 + 1)][j]);
-				else
-					printf("|");
-			} else
-				printf(" ");
+		for (k = 0; k < 3; k++) {
+			for (i = 0; i < RANGE(maxnum); i++) {
+				if (i < RANGE(cols[k][j]) + (RANGE(maxnum) - RANGE(cols[k][j])) / 2 && i >= (RANGE(maxnum) - RANGE(cols[k][j])) / 2) {
+					if (cols[k][j] != 0)
+						printf("%d", cols[k][j]);
+					else
+						printf("|");
+				} else
+					printf(" ");
+			}
 		}
 		printf("\n");
 	}
