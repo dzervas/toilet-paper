@@ -1,8 +1,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-int maxnum;
-char *table;
+int maxnum, *cols[3], numcols[3] = { 0 };
 
 void show();
 void towers(int, char, char, char);
@@ -14,29 +13,47 @@ int main() {
 	if (!scanf("%d", &maxnum))
 		printf("Error!");
 
-	table = (char *) malloc(maxnum * sizeof(unsigned short int));
+	for (i = 0; i < 3; i++)
+		cols[i] = (int*) malloc(maxnum * sizeof(int));
+	
+	numcols[0] = maxnum;
+	for (i = 0; i < maxnum ; i++)
+		cols[0][maxnum - i - 1] = i + 1;
+
+	show();
 	towers(maxnum, 'A', 'C', 'B');
-	free(table);
+
+	for (i = 0; i < 3; i++)
+		free(cols[i]);
 
 	return 0;
 }
 
 void towers(int num, char from, char to, char other) {
 	if(num == 1) {
-		table[0] = to;
-		show();
+		numcols[from - 65]--;
+		cols[from - 65][numcols[from - 65]] = 0;
+
+		cols[to - 65][numcols[to - 65]] = num;
+		numcols[to - 65]++;
+
 		printf("%c -> %c\n", from, to);
+		show();
+
 		return;
 	}
 
-	/* Move top i-1 disks from A to B,  using C as auxiliary */
 	towers(num - 1, from, other, to);
-	/* Move remaining disks from A to C */
 
-	table[num - 1] = to;
-	show();
+	numcols[from - 65]--;
+	cols[from - 65][numcols[from - 65]] = 0;
+
+	cols[to - 65][numcols[to - 65]] = num;
+	numcols[to - 65]++;
+
 	printf("%c -> %c\n", from, to);
-	/* Move n-1 disks from B to C using A as auxiliary */
+	show();
+
 	towers(num - 1, other, to, from);
 }
 
@@ -45,7 +62,7 @@ void show() {
 
 	for (i = 0; i < (((maxnum - 1) * 2 + 1) * 3 + 2); i++) {
 		if ((i % ((maxnum - 1) * 2 + 1)) / 2 == maxnum - 1)
-			printf("%c", 'A' + ((maxnum - 1) * 2 + 1));
+			printf("%c", 'A' + (i / ((maxnum - 1) * 2 + 1)));
 		else
 			printf(" ");
 	}
@@ -61,13 +78,18 @@ void show() {
 
 	printf("\n");
 
-	for (j = 0; j < maxnum; j++) {
+	for (j = maxnum - 1; j >= 0; j--) {
 		for (i = 0; i < (((maxnum - 1) * 2 + 1) * 3 + 2); i++) {
-			if ((i % ((maxnum - 1) * 2 + 1)) / 2 == maxnum - 1)
-				printf("%d", j + 1);
-			else
+			if (((i % ((maxnum - 1) * 2 + 1)) / 2 == maxnum - 1)) {
+				if (cols[i / ((maxnum - 1) * 2 + 1)][j] != 0)
+					printf("%d", cols[i / ((maxnum - 1) * 2 + 1)][j]);
+				else
+					printf("|");
+			} else
 				printf(" ");
 		}
 		printf("\n");
 	}
+
+	printf("\n");
 }
