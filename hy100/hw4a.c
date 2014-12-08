@@ -86,12 +86,13 @@ void show() {
 	for (j = maxnum - 1; j >= 0; j--) {
 		for (k = 0; k < 3; k++) {
 			for (i = 0; i < RANGE(maxnum); i++) {
-				if (i < RANGE(cols[k][j]) + (RANGE(maxnum) - RANGE(cols[k][j])) / 2 && i >= (RANGE(maxnum) - RANGE(cols[k][j])) / 2) {
-					if (cols[k][j] != 0)
-						printf("%d", cols[k][j]);
-					else
+				if (i < RANGE(cols[k][j]) + (RANGE(maxnum) - RANGE(cols[k][j])) / 2 &&
+						i >= (RANGE(maxnum) - RANGE(cols[k][j])) / 2 &&
+						cols[k][j] != 0) {
+					printf("%d", cols[k][j]);
+				} else if (i % RANGE(maxnum) == RANGE(maxnum) / 2 && cols[k][j] == 0)
 						printf("|");
-				} else
+				else
 					printf(" ");
 			}
 		}
