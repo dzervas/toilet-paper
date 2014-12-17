@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <iterator>
 #include <map>
@@ -74,6 +75,70 @@ class Rectangle : public Shape {
 		}
 };
 
+class Rhombus : public Shape {
+	public:
+		Rhombus(int x, int y, int s) {
+			this->x = x;
+			this->y = y;
+			this->s = s;
+		}
+
+		void Scale(int factor) {
+			this->s *= factor;
+		}
+
+		void Trans(int x, int y) {
+			this->x = x;
+			this->y = y;
+		}
+
+	private:
+		int x, y, s;
+
+		bool drawEquation(int x, int y) {
+			if (false)
+				return true;
+
+			return false;
+		}
+
+		bool areaEquation(int x, int y) {
+			if (false)
+				return true;
+
+			return false;
+		}
+};
+
+class Circle : public Shape {
+	public:
+		Circle(int x, int y, int s) {
+			this->x = x;
+			this->y = y;
+			this->s = s;
+		}
+
+		void Scale(int factor) {
+			this->s *= factor;
+		}
+
+		void Trans(int x, int y) {
+			this->x = x;
+			this->y = y;
+		}
+
+	private:
+		int x, y, s;
+
+		bool drawEquation(int x, int y) {
+			return (pow(x - this->x, 2) + pow(y - this->y, 2) <= pow(this->s, 2));
+		}
+
+		bool areaEquation(int x, int y) {
+			return (pow(x - this->x, 2) + pow(y - this->y, 2) == pow(this->s, 2));
+		}
+};
+
 int main() {
 	string buff, name;
 	vector<int> arguments;
@@ -106,16 +171,23 @@ int main() {
 				cin >> buff;
 				arguments.push_back(stoi(buff));
 			}
-
-// 			cout << "Rectangle with x: " << arguments[0] << " y: " << arguments[1] <<
-// 				" width: " << arguments[2] << " height: " << arguments[3] << endl;
 			drawList[name] = new Rectangle(arguments[0], arguments[1], arguments[2], arguments[3]);
 		} else if (buff.compare("newrhomb") == 0) {
-			cout << "No rhomb with x: " << arguments[0] << " y: " << arguments[1] <<
-				" s: " << arguments[2] << "yet :(" << endl;
+			cin >> name;
+			for (i = 0; i < 3; i++) {
+				buff.clear();
+				cin >> buff;
+				arguments.push_back(stoi(buff));
+			}
+			drawList[name] = new Rhombus(arguments[0], arguments[1], arguments[2]);
 		} else if (buff.compare("newcircle") == 0) {
-			cout << "No circle with x: " << arguments[0] << " y: " << arguments[1] <<
-				" r: " << arguments[2] << "yet :(" << endl;
+			cin >> name;
+			for (i = 0; i < 3; i++) {
+				buff.clear();
+				cin >> buff;
+				arguments.push_back(stoi(buff));
+			}
+			drawList[name] = new Circle(arguments[0], arguments[1], arguments[2]);
 		} else if (buff.compare("delete") == 0) {
 			cin >> name;
 
