@@ -1,30 +1,33 @@
 #include <iostream>
+#include <iterator>
+#include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 
 using namespace std;
 
-class Shapes {
+class Shape {
 	public:
-		void Draw(bool area) {
+		void Draw(bool area, bool ***fb) {
 			int i, j;
-			for (i = 0; i < 50; i++) {
-				cout << i << ": ";
+			for (i = 0; i < 100; i++) {
 				for (j = 0; j < 50; j++) {
 					if (area){
 						if (areaEquation(j, i))
-							cout << ".";
+							(*fb)[i][j] = true;
 					} else {
 						if (drawEquation(j, i))
-							cout << ".";
+							(*fb)[i][j] = true;
 					}
 				}
-				cout << endl;
 			}
 		}
 
-		virtual void Scale() {
+		virtual void Scale(int factor) {
 			cout << "Error in scale!";
 		}
-		virtual void Trans() {
+		virtual void Trans(int x, int y) {
 			cout << "Error in trans!";
 		}
 	private:
@@ -32,7 +35,7 @@ class Shapes {
 		virtual bool areaEquation(int x, int y) = 0;
 };
 
-class Rectangle : public Shapes {
+class Rectangle : public Shape {
 	public:
 		Rectangle(int x, int y, int width, int height) {
 			this->x = x;
@@ -71,36 +74,106 @@ class Rectangle : public Shapes {
 		}
 };
 
-constexpr unsigned long int str2int(const char* str, int h = 0) {
-    return !str[h] ? 5381 : (str2int(str, h+1)*33) ^ str[h];
-}
-
 int main() {
-	string buff;
+	string buff, name;
+	vector<int> arguments;
+	map<string, Shape*> drawList;
+	map<string, Shape*>::iterator it;
+	unsigned int i, j;
+	bool **framebuffer;
+
+	framebuffer = new bool*[100];
+	for (i = 0; i < 50; i++) {
+		framebuffer[i] = new bool[100];
+
+		for (j = 0; j < 100; j++)
+			framebuffer[i][j] = false;
+	}
+
 
 	while (1) {
+		arguments.clear();
+		buff.clear();
+		name.clear();
+
 		cout << "$> ";
 		cin >> buff;
 
-		switch (str2int(buff)) {
-			case str2int("newrect"):
-				break;
-			case str2int("newrhomb"):
-				break;
-			case str2int("newcircle"):
-				break;
-			case str2int("delete"):
-				break;
-			case str2int("translate"):
-				break;
-			case str2int("scaleup"):
-				break;
-			case str2int("draw"):
-				break;
-			case str2int("area"):
-				break;
-			default:
-				break;
+		if (buff.compare("newrect") == 0) {
+			cin >> name;
+			for (i = 0; i < 4; i++) {
+				buff.clear();
+				cin >> buff;
+				arguments.push_back(stoi(buff));
+			}
+
+// 			cout << "Rectangle with x: " << arguments[0] << " y: " << arguments[1] <<
+// 				" width: " << arguments[2] << " height: " << arguments[3] << endl;
+			drawList[name] = new Rectangle(arguments[0], arguments[1], arguments[2], arguments[3]);
+		} else if (buff.compare("newrhomb") == 0) {
+			cout << "No rhomb with x: " << arguments[0] << " y: " << arguments[1] <<
+				" s: " << arguments[2] << "yet :(" << endl;
+		} else if (buff.compare("newcircle") == 0) {
+			cout << "No circle with x: " << arguments[0] << " y: " << arguments[1] <<
+				" r: " << arguments[2] << "yet :(" << endl;
+		} else if (buff.compare("delete") == 0) {
+			cin >> name;
+
+			drawList.erase(drawList.find(name));
+		} else if (buff.compare("translate") == 0) {
+			cin >> name;
+			for (i = 0; i < 2; i++) {
+				buff.clear();
+				cin >> buff;
+				arguments.push_back(stoi(buff));
+			}
+
+			drawList[name]->Trans(arguments[0], arguments[1]);
+		} else if (buff.compare("scaleup") == 0) {
+			cin >> name;
+			for (i = 0; i < 1; i++) {
+				buff.clear();
+				cin >> buff;
+				arguments.push_back(stoi(buff));
+			}
+
+			drawList[name]->Scale(arguments[0]);
+		} else if (buff.compare("draw") == 0) {
+			for (it = drawList.begin(); it != drawList.end(); it++)
+				it->second->Draw(false, &framebuffer);
+
+			for (i = 0; i < 50; i++) {
+				for (j = 0; j < 100; j++) {
+					if (framebuffer[i][j] == true)
+						cout << "!";
+					else
+						cout << " ";
+				}
+
+				cout << endl;
+			}
+
+			for (i = 0; i < 50; i++) {
+				for (j = 0; j < 100; j++)
+					framebuffer[i][j] = false;
+			}
+		} else if (buff.compare("area") == 0) {
+			for (it = drawList.begin(); it != drawList.end(); it++)
+				it->second->Draw(true, &framebuffer);
+
+			for (i = 0; i < 50; i++) {
+				for (j = 0; j < 100; j++) {
+					if (framebuffer[i][j])
+						cout << ".";
+					else
+						cout << " ";
+				}
+
+				cout << endl;
+			}
+		} else if (buff.compare("quit") == 0) {
+			break;
+		} else {
 		}
 	}
 
