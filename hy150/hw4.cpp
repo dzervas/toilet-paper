@@ -59,19 +59,13 @@ class Rectangle : public Shape {
 		int x, y, width, height;
 
 		bool drawEquation(int x, int y) {
-			if ((x >= this->x && x < this->x + this->width) &&
-					(y >= this->y && y < this->y + this->height))
-				return true;
-
-			return false;
+			return ((x >= this->x && x < this->x + this->width) &&
+					(y >= this->y && y < this->y + this->height));
 		}
 
 		bool areaEquation(int x, int y) {
-			if ((x == this->x || x == this->x + this->width) &&
-					(y == this->y || y == this->y + this->height))
-				return true;
-
-			return false;
+			return ((x == this->x || x == this->x + this->width) &&
+					(y == this->y || y == this->y + this->height));
 		}
 };
 
@@ -96,16 +90,10 @@ class Rhombus : public Shape {
 		int x, y, s;
 
 		bool drawEquation(int x, int y) {
-			if (false)
-				return true;
-
 			return false;
 		}
 
 		bool areaEquation(int x, int y) {
-			if (false)
-				return true;
-
 			return false;
 		}
 };
@@ -140,12 +128,12 @@ class Circle : public Shape {
 };
 
 int main() {
-	string buff, name;
-	vector<int> arguments;
+	bool **framebuffer;
 	map<string, Shape*> drawList;
 	map<string, Shape*>::iterator it;
-	unsigned int i, j;
-	bool **framebuffer;
+	string buff, name;
+	unsigned int i, j, tmp;
+	vector<int> arguments;
 
 	framebuffer = new bool*[100];
 	for (i = 0; i < 50; i++) {
@@ -210,14 +198,31 @@ int main() {
 			}
 
 			drawList[name]->Scale(arguments[0]);
-		} else if (buff.compare("draw") == 0) {
-			for (it = drawList.begin(); it != drawList.end(); it++)
-				it->second->Draw(false, &framebuffer);
+		} else if (buff.compare("draw") == 0 || buff.compare("area") == 0) {
+			for (it = drawList.begin(); it != drawList.end(); it++) {
+				if (buff.compare("area") == 0)
+					it->second->Draw(true, &framebuffer);
+				else
+					it->second->Draw(false, &framebuffer);
+			}
 
-			for (i = 0; i < 50; i++) {
+			tmp = 0;
+			for (i = 50; i > 0; i--) {
+				for (j = 0; j < 100; j++) {
+					if (framebuffer[i -1][j]) {
+						tmp = i;
+						break;
+					}
+				}
+
+				if (tmp)
+					break;
+			}
+
+			for (i = 0; i < tmp; i++) {
 				for (j = 0; j < 100; j++) {
 					if (framebuffer[i][j] == true)
-						cout << "!";
+						cout << ".";
 					else
 						cout << " ";
 				}
@@ -228,20 +233,6 @@ int main() {
 			for (i = 0; i < 50; i++) {
 				for (j = 0; j < 100; j++)
 					framebuffer[i][j] = false;
-			}
-		} else if (buff.compare("area") == 0) {
-			for (it = drawList.begin(); it != drawList.end(); it++)
-				it->second->Draw(true, &framebuffer);
-
-			for (i = 0; i < 50; i++) {
-				for (j = 0; j < 100; j++) {
-					if (framebuffer[i][j])
-						cout << ".";
-					else
-						cout << " ";
-				}
-
-				cout << endl;
 			}
 		} else if (buff.compare("quit") == 0) {
 			break;
