@@ -12,13 +12,13 @@ class Shape {
 	public:
 		void Draw(bool area, bool ***fb) {
 			int i, j;
-			for (i = 0; i < 100; i++) {
-				for (j = 0; j < 50; j++) {
+			for (i = 0; i < 50; i++) {
+				for (j = 0; j < 100; j++) {
 					if (area){
-						if (areaEquation(j, i))
+						if (areaEquation(i, j))
 							(*fb)[i][j] = true;
 					} else {
-						if (drawEquation(j, i))
+						if (drawEquation(i, j))
 							(*fb)[i][j] = true;
 					}
 				}
@@ -43,6 +43,11 @@ class Rectangle : public Shape {
 			this->y = y;
 			this->width = width;
 			this->height = height;
+
+			this->x2 = this->x + this->width;
+			this->y2 = this->y;
+			this->x4 = this->x;
+			this->y4 = this->y + this->height;
 		}
 
 		void Scale(int factor) {
@@ -56,16 +61,29 @@ class Rectangle : public Shape {
 		}
 
 	private:
-		int x, y, width, height;
+		int x, y, width, height, x2, y2, x4, y4;
 
 		bool drawEquation(int x, int y) {
-			return ((x >= this->x && x < this->x + this->width) &&
-					(y >= this->y && y < this->y + this->height));
+			int xtmp, ytmp, xn, yn;
+
+			xn = x - this->x;
+			yn = y - this->y;
+			xtmp = xn * ((this->x2 - this->x) / this->width) + yn * ((this->y2 - this->y) / this->height);
+			ytmp = xn * ((this->x4 - this->x) / this->width) + yn * ((this->y4 - this->y) / this->height);
+
+			return ((xtmp >= 0 && xtmp <= this->width) && (ytmp >= 0 && ytmp <= this->height));
 		}
 
 		bool areaEquation(int x, int y) {
-			return ((x == this->x || x == this->x + this->width) &&
-					(y == this->y || y == this->y + this->height));
+			int xtmp, ytmp, xn, yn;
+
+			xn = x - this->x;
+			yn = y - this->y;
+			xtmp = xn * ((this->x2 - this->x) / this->width) + yn * ((this->y2 - this->y) / this->height);
+			ytmp = xn * ((this->x4 - this->x) / this->width) + yn * ((this->y4 - this->y) / this->height);
+
+			return ((xtmp == 0 || xtmp == this->width || ytmp == 0 || ytmp == this->height) &&
+					x <= this->x2 && y <= this->y4 && x >= this->x && y >= this->y);
 		}
 };
 
