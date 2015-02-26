@@ -24,12 +24,31 @@ int main() {
  	*/
 
 	for (c = getchar(); c != EOF; c = getchar()) {
-		if (c != '\n')
-			printf("%d ", c);
-		putchar(c);
-
-		if (c == "206" || c == "207")
-			gr = 1;
+		if (gr) {
+			/* Small greek (a-o) && (p-w)*/
+			if ((gr == 206 && c >= 177 && c <= 191) ||
+					(gr == 207 && c >= 128 && c <= 137))
+				printf("Small greek letter!\n");
+			else if (gr == 206 && c >= 145 && c <= 169)
+				printf("Capital greek letter!\n");
+			else if ((gr == 206 && c >= 172 && c <= 175) ||
+					(gr == 207 && c >= 140 && c <= 142))
+				printf("Small greek letter with accent\n");
+			else if (gr == 206 && c >= 134 && c <= 143)
+				printf("Capital greek letter with accent\n");
+			else if (gr == 207 && c >= 138 && c <= 139)
+				printf("Small greek letter with dialitika\n");
+			else if (gr == 206 && c >= 170 && c <= 171)
+				printf("Capital greek letter with dialitika\n");
+			else if (gr == 206 && (c == 144 || c == 176))
+				printf("Small greek letter with accent & dialitika\n");
+			gr = 0;
+		} else if (c == 206 || c == 207 || c == 194) {
+			gr = c;
+			printf("GR %d: ", c);
+		} else if (!gr && c != '\n'){
+			printf("Reg %c\n", (char) c);
+		}
 	}
 
 	return 0;
@@ -71,7 +90,7 @@ int nextstate(int c) {
 }
 
 int transcode(int c) {
-	int table[3][48] = {
+	int table[][3] = {
 		{ 225, 'a', 0 },
 		{ 226, 'v', 0 },
 		{ 227, 'g', 0 },
