@@ -2,14 +2,16 @@
 
 typedef void STATE(int);
 
-STATE echo, techo, echot, echod, echotd, techod, second;
+/*STATE echo, techo, echot, echod, echotd, techod, second;
 
 int nextstate(int);
-int transcode(int);
+int transcode(int);*/
 
 int main() {
 	int c;
+	unsigned char gr = 0;
 
+	/*
 	STATE *states[7] = {
 		echo,
 		echot,
@@ -18,12 +20,24 @@ int main() {
 		echotd,
 		techod,
 		second
-	};
+ 	};
+ 	*/
 
-	c = getchar();
+	for (c = getchar(); c != EOF; c = getchar()) {
+		if (c != '\n')
+			printf("%d ", c);
+		putchar(c);
+
+		if (c == "206" || c == "207")
+			gr = 1;
+	}
+
+	return 0;
 }
 
+/*
 int nextstate(int c) {
+	if (c )
 	switch (c) {
 		// Non capital with tono
 		case 1 :
@@ -110,3 +124,4 @@ int transcode(int c) {
 		{ 217, 'W', 0 }
 	}
 }
+*/

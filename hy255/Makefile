@@ -1,7 +1,7 @@
 .SUFFIXES: .c
 
 FILES = $(patsubst %.c, %, $(wildcard *.c))
-CFLAGS = -ansi -pedantic -Werror -O2
+CFLAGS = -ansi -pedantic -Wall
 CC = cc
 
 all: $(FILES)
