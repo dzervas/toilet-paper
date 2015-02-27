@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+
+#define TABLE(x) ((x == 206) ? table : tablealt)
 
 typedef void STATE(int);
 
@@ -8,7 +11,7 @@ int nextstate(int); */
 int* transcode(int, int);
 
 int main() {
-	int *buff, c, db = 0;
+	int *buff, c;/*, db = 0;*/
 	unsigned char gr = 0;
 
 	/*
@@ -25,6 +28,7 @@ int main() {
 
 	for (c = getchar(); c != EOF; c = getchar()) {
 		if (gr) {
+			printf("here!");
 			printf("%d ", c);
 
 
@@ -32,27 +36,28 @@ int main() {
 					(gr == 207 && c >= 128 && c <= 137) ||
 					(gr == 206 && c >= 145 && c <= 169)) {	/* Capital greek */
 				if (c == 188 || c == 189 || c == 156 || c == 157)
-					db = c;
+					/*db = c;*/
+					NULL;
 				else {
 					buff = transcode(gr, c);
-					printf("%c", (char) buff[1]);
-					if (buff[2] != 0)
-						printf("%c", (char) buff[2]);
+					printf("%c", (char) buff[0]);
+					if (buff[1] != 0)
+						printf("%c", (char) buff[1]);
 				}
 			} else if ((gr == 206 && c >= 172 && c <= 175) ||	/* Small greek with accent */
 					(gr == 207 && c >= 140 && c <= 142)) {
 				buff = transcode(gr, c);
-				printf("%c'", (char) buff[1]);
+				printf("%c'", (char) buff[0]);
 			} else if (gr == 206 && c >= 134 && c <= 143) {		/* Capital greek with accent */
 				buff = transcode(gr, c);
-				printf("'%c", (char) buff[1]);
+				printf("'%c", (char) buff[0]);
 			} else if ((gr == 207 && c >= 138 && c <= 139) ||
 					(gr == 206 && c >= 170 && c <= 171)) {	/* Greek with dialitika */
 				buff = transcode(gr, c);
-				printf("%c\"", (char) buff[1]);
+				printf("%c\"", (char) buff[0]);
 			} else if (gr == 206 && (c == 144 || c == 176)) {	/* Small greek with accent & dialitika */
 				buff = transcode(gr, c);
-				printf("%c'\"", (char) buff[1]);
+				printf("%c'\"", (char) buff[0]);
 			} else {
 				printf("%c%c", gr, c);
 			}
@@ -165,6 +170,7 @@ int* transcode(int code, int c) {
 		{ 168, 'P', 'S' },
 		{ 169, 'W', 0 },
 		{ 169, 'W', 0 },
+		{ 0, 0, 0 }
 	};
 
 	int tablealt[][3] = {
@@ -182,19 +188,21 @@ int* transcode(int code, int c) {
 		{ 136, 'p', 's' },
 		{ 137, 'w', 0 },
 		{ 137, 'w', 0 },
+		{ 0, 0, 0 }
 	};
 
-	int **buff, i;
+	int i, *buff;
 
-	if (code == 207)
-		buff = tablealt;
-	else
-		buff = table;
+	buff = (int *) calloc(2, sizeof(int));
 
-	for (i = 0; i != NULL; i++) {
-		if (buff[i][0] == c)
-			return buff[i];
+	buff[0] = c;
+
+	for (i = 0; TABLE(code)[i][1] != 0; i++) {
+		if (TABLE(code)[i][0] == c) {
+			buff[0] = TABLE(code)[i][1];
+			buff[1] = TABLE(code)[i][2];
+		}
 	}
 
-	return NULL;
+	return buff;
 }
