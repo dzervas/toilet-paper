@@ -4,11 +4,11 @@ typedef void STATE(int);
 
 /*STATE echo, techo, echot, echod, echotd, techod, second;
 
-int nextstate(int);
-int transcode(int);*/
+int nextstate(int); */
+int* transcode(int, int);
 
 int main() {
-	int c, db = 0;
+	int *buff, c, db = 0;
 	unsigned char gr = 0;
 
 	/*
@@ -25,31 +25,38 @@ int main() {
 
 	for (c = getchar(); c != EOF; c = getchar()) {
 		if (gr) {
-			/* Small greek (a-o) && (p-w)*/
-			if ((gr == 206 && c >= 177 && c <= 191) ||
-					(gr == 207 && c >= 128 && c <= 137)) {
-				printf("Small greek letter!\n");
+			printf("%d ", c);
 
-				if (c == 188 || c == 189)
-					db = c;
-			} else if (gr == 206 && c >= 145 && c <= 169) {
-				printf("Capital greek letter!\n");
 
-				if (c == 188 || c == 189)
+			if ((gr == 206 && c >= 177 && c <= 191) ||		/* Small greek (a-o) || (p-w) */
+					(gr == 207 && c >= 128 && c <= 137) ||
+					(gr == 206 && c >= 145 && c <= 169)) {	/* Capital greek */
+				if (c == 188 || c == 189 || c == 156 || c == 157)
 					db = c;
-			} else if ((gr == 206 && c >= 172 && c <= 175) ||
-					(gr == 207 && c >= 140 && c <= 142))
-				printf("Small greek letter with accent\n");
-			else if (gr == 206 && c >= 134 && c <= 143)
-				printf("Capital greek letter with accent\n");
-			else if (gr == 207 && c >= 138 && c <= 139)
-				printf("Small greek letter with dialitika\n");
-			else if (gr == 206 && c >= 170 && c <= 171)
-				printf("Capital greek letter with dialitika\n");
-			else if (gr == 206 && (c == 144 || c == 176))
-				printf("Small greek letter with accent & dialitika\n");
-			else if (gr == 194)
-				printf("Greek punctuation");
+				else {
+					buff = transcode(gr, c);
+					printf("%c", (char) buff[1]);
+					if (buff[2] != 0)
+						printf("%c", (char) buff[2]);
+				}
+			} else if ((gr == 206 && c >= 172 && c <= 175) ||	/* Small greek with accent */
+					(gr == 207 && c >= 140 && c <= 142)) {
+				buff = transcode(gr, c);
+				printf("%c'", (char) buff[1]);
+			} else if (gr == 206 && c >= 134 && c <= 143) {		/* Capital greek with accent */
+				buff = transcode(gr, c);
+				printf("'%c", (char) buff[1]);
+			} else if ((gr == 207 && c >= 138 && c <= 139) ||
+					(gr == 206 && c >= 170 && c <= 171)) {	/* Greek with dialitika */
+				buff = transcode(gr, c);
+				printf("%c\"", (char) buff[1]);
+			} else if (gr == 206 && (c == 144 || c == 176)) {	/* Small greek with accent & dialitika */
+				buff = transcode(gr, c);
+				printf("%c'\"", (char) buff[1]);
+			} else {
+				printf("%c%c", gr, c);
+			}
+
 			gr = 0;
 		} else if (c == 206 || c == 207 || c == 194) {
 			gr = c;
@@ -98,7 +105,7 @@ int nextstate(int c) {
 }
 */
 
-int transcode(int c) {
+int* transcode(int code, int c) {
 	int table[][3] = {
 		{ 177, 'a', 0 },
 		{ 177, 'a', 0 },
@@ -122,21 +129,6 @@ int transcode(int c) {
 		{ 190, 'k', 's' },
 		{ 191, 'o', 0 },
 		{ 191, 'o', 0 },
-
-		{ 128, 'p', 0 },
-		{ 129, 'r', 0 },
-		{ 130, 's', 0 },
-		{ 131, 's', 0 },
-		{ 132, 't', 0 },
-		{ 133, 'y', 0 },
-		{ 133, 'y', 0 },
-		{ 133, 'y', 0 },
-		{ 133, 'y', 0 },
-		{ 134, 'f', 0 },
-		{ 135, 'x', 0 },
-		{ 136, 'p', 's' },
-		{ 137, 'w', 0 },
-		{ 137, 'w', 0 },
 
 		{ 145, 'A', 0 },
 		{ 145, 'A', 0 },
@@ -175,5 +167,34 @@ int transcode(int c) {
 		{ 169, 'W', 0 },
 	};
 
-	return 0;
+	int tablealt[][3] = {
+		{ 128, 'p', 0 },
+		{ 129, 'r', 0 },
+		{ 130, 's', 0 },
+		{ 131, 's', 0 },
+		{ 132, 't', 0 },
+		{ 133, 'y', 0 },
+		{ 133, 'y', 0 },
+		{ 133, 'y', 0 },
+		{ 133, 'y', 0 },
+		{ 134, 'f', 0 },
+		{ 135, 'x', 0 },
+		{ 136, 'p', 's' },
+		{ 137, 'w', 0 },
+		{ 137, 'w', 0 },
+	};
+
+	int **buff, i;
+
+	if (code == 207)
+		buff = tablealt;
+	else
+		buff = table;
+
+	for (i = 0; i != NULL; i++) {
+		if (buff[i][0] == c)
+			return buff[i];
+	}
+
+	return NULL;
 }
