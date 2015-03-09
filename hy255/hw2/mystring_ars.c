@@ -9,6 +9,7 @@
  you can do whatever you want with this stuff. If we meet some day, and you think this stuff is worth it,
  you can buy me a beer in return.
 */
+#include <assert.h>
 #include <stddef.h>
 #include "mystring.h"
 
@@ -72,7 +73,7 @@ char *ms_concat(char dest[], const char src[]) {
 	assert(dest); /* Works because NULL and FALSE are identical. */
 	assert(src);
 
-	dest_len = my_length(dest);
+	dest_len = ms_length(dest);
 
 	for (i = 0 ; src[i] != '\0' ; i++)
 		dest[dest_len + i] = src[i];
@@ -93,7 +94,7 @@ char *ms_nconcat(char dest[], const char src[], size_t n) {
 	assert(src);
 	assert(n);
 
-	dest_len = my_length(dest);
+	dest_len = ms_length(dest);
 
 	for (i = 0 ; i < n && src[i] != '\0' ; i++)
 		dest[dest_len + i] = src[i];
@@ -103,13 +104,13 @@ char *ms_nconcat(char dest[], const char src[], size_t n) {
 }
 
 
-char *ms_compare(const char s1[], const char s2[]) {
+int ms_compare(const char s1[], const char s2[]) {
 	size_t s1_len, i;
 
 	assert(s1);
 	assert(s2);
 
-	s1_len = my_length(s1);
+	s1_len = ms_length(s1);
 
 	for (i = 0 ; i < s1_len; i++) {
 		if (s2[i] == '\0')
@@ -126,14 +127,14 @@ char *ms_compare(const char s1[], const char s2[]) {
 	return 0;
 }
 
-char *ms_ncompare(const char s1[], const char s2[], size_t n) {
+int ms_ncompare(const char s1[], const char s2[], size_t n) {
 	size_t s1_len, i;
 
 	assert(s1);
 	assert(s2);
 	assert(n);
 
-	s1_len = my_length(s1);
+	s1_len = ms_length(s1);
 
 	for (i = 0 ; i < s1_len && i < n; i++) {
 		if (s2[i] == '\0')
@@ -156,9 +157,9 @@ char *ms_search(const char haystack[], const char needle[]) {
 	assert(haystack);
 	assert(needle);
 
-	for (i = 0; haystack[i] != '\0' && my_length(&haystack[i]) > my_length(needle); i++) {
+	for (i = 0; haystack[i] != '\0' && ms_length(&haystack[i]) > ms_length(needle); i++) {
 		if (ms_compare(needle, &haystack[i]) == 0)
-			return i;
+			return (const char *) &haystack[i];
 	}
 
 	return NULL;
