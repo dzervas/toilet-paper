@@ -10,6 +10,7 @@
  you can buy me a beer in return.
 */
 #include <stddef.h>
+#include "mystring.h"
 
 /*
  Return the length of string string.
@@ -103,59 +104,62 @@ char *ms_nconcat(char dest[], const char src[], size_t n) {
 
 
 char *ms_compare(const char s1[], const char s2[]) {
-	size_t s1_len, s2_len, i, cmp;
+	size_t s1_len, i;
 
 	assert(s1);
 	assert(s2);
-	assert(n);
 
 	s1_len = my_length(s1);
-	s2_len = my_length(s2);
-	cmp = -1 * my_length(s2);
 
-	for (i = 0 ; i < s1_len && i < s2_len; i++) {
-		if (s1[i] == s2[i])
-			cmp++;
+	for (i = 0 ; i < s1_len; i++) {
+		if (s2[i] == '\0')
+			return  1;
+		if (s2[i] > s1[i])
+			return -1;
+		if (s1[i] > s2[i])
+			return  1;
 	}
 
-	if (cmp == 0 && s1_len > s2_len)
-		cmp += (s1_len - s2_len);
+	if (s2[i] != '\0')
+		return -1;
 
-	return cmp;
+	return 0;
 }
 
 char *ms_ncompare(const char s1[], const char s2[], size_t n) {
-	size_t s1_len, s2_len, i, cmp;
+	size_t s1_len, i;
 
 	assert(s1);
 	assert(s2);
 	assert(n);
 
 	s1_len = my_length(s1);
-	s2_len = my_length(s2);
-	cmp = -1 * my_length(s2);
 
-	for (i = 0 ; i < n && i < s1_len && i < s2_len; i++) {
-		if (s1[i] == s2[i])
-			cmp++;
+	for (i = 0 ; i < s1_len && i < n; i++) {
+		if (s2[i] == '\0')
+			return  1;
+		if (s2[i] > s1[i])
+			return -1;
+		if (s1[i] > s2[i])
+			return  1;
 	}
 
-	if (cmp == 0 && s1_len > s2_len)
-		cmp += (s1_len - s2_len);
+	if (s2[i] != '\0')
+		return -1;
 
-	return cmp;
+	return 0;
 }
 
 char *ms_search(const char haystack[], const char needle[]) {
-	size_t i, cmp;
+	size_t i;
 
 	assert(haystack);
 	assert(needle);
 
-	for (i = 0; needle[i] != '\0'; i++) {
-		cmp = strcmp(needle + i, haystack);
-		if (cmp >= 0)
+	for (i = 0; haystack[i] != '\0' && my_length(&haystack[i]) > my_length(needle); i++) {
+		if (ms_compare(needle, &haystack[i]) == 0)
+			return i;
 	}
 
-	if (cmp >= 0)
+	return NULL;
 }
