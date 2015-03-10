@@ -50,7 +50,7 @@ char *ms_copy(char dest[], const char src[]) {
 char *ms_ncopy(char dest[], const char src[], size_t n) {
 	size_t i;
 	assert(src); /* Works because NULL and FALSE are identical. */
-	assert(n);
+//	assert(n);
 
 	for (i = 0; i < n && src[i] != '\0'; i++)
 		dest[i] = src[i];
@@ -85,14 +85,14 @@ char *ms_concat(char dest[], const char src[]) {
 /*
  Appends n first letters of src string to dest string
  Returns pointer to dest string
- It is a checked runtime error for dest, src and n to be NULL or 0.
+ It is a checked runtime error for dest, src.
 */
 char *ms_nconcat(char dest[], const char src[], size_t n) {
 	size_t dest_len, i;
 
 	assert(dest); /* Works because NULL and FALSE are identical. */
 	assert(src);
-	assert(n);
+//	assert(n);
 
 	dest_len = ms_length(dest);
 
@@ -104,6 +104,11 @@ char *ms_nconcat(char dest[], const char src[], size_t n) {
 }
 
 
+/*
+ Compares s1 with s2
+ Returns 1 if s1 is greater, 0 if equal and -1 if less than s2
+ It is a checked runtime error for s1, s2.
+*/
 int ms_compare(const char s1[], const char s2[]) {
 	size_t s1_len, i;
 
@@ -127,12 +132,17 @@ int ms_compare(const char s1[], const char s2[]) {
 	return 0;
 }
 
+/*
+ Compares first n characters of s1 with s2
+ Returns 1 if s1 is greater, 0 if equal and -1 if less than s2
+ It is a checked runtime error for s1, s2.
+*/
 int ms_ncompare(const char s1[], const char s2[], size_t n) {
 	size_t s1_len, i;
 
 	assert(s1);
 	assert(s2);
-	assert(n);
+//	assert(n);
 
 	s1_len = ms_length(s1);
 
@@ -151,6 +161,11 @@ int ms_ncompare(const char s1[], const char s2[], size_t n) {
 	return 0;
 }
 
+/*
+ Searches needle in haystack
+ Returns a pointer to the first occurance of needle
+ It is a checked runtime error for haystack, needle
+*/
 char *ms_search(const char haystack[], const char needle[]) {
 	size_t i;
 
@@ -159,7 +174,7 @@ char *ms_search(const char haystack[], const char needle[]) {
 
 	for (i = 0; haystack[i] != '\0' && ms_length(&haystack[i]) > ms_length(needle); i++) {
 		if (ms_compare(needle, &haystack[i]) == 0)
-			return (const char *) &haystack[i];
+			return (char *) &haystack[i];
 	}
 
 	return NULL;
