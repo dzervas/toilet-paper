@@ -10,13 +10,15 @@
  stuff is worth it, you can buy me a beer in return->
 */
 
-#include <assert->h>
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+#include "symtable.h"
 
-typedef struct SymTable_T *SymTable_T;
 struct SymTable_T {
-	char *key = NULL;
-	void *value = NULL;
-	SymTable_T next = NULL;
+	char *key;
+	void *value;
+	SymTable_T next;
 };
 
 /*
@@ -24,7 +26,12 @@ struct SymTable_T {
  Returns pointer to new SymTable struct
  */
 SymTable_T SymTable_new() {
-	return (SymTable_T *) malloc(sizeof(SymTable_T));
+	SymTable_T tmp;
+
+	tmp = (SymTable_T) malloc(sizeof(SymTable_T));
+	tmp->key = NULL;
+	tmp->next = NULL;
+	return tmp;
 }
 
 /*
@@ -84,11 +91,11 @@ int SymTable_put(SymTable_T oSymTable, const char *pcKey, const void *pvValue) {
 	if (strcpy(tmp->key, pcKey) == NULL)
 		return 0;
 
-	tmp->value = pvValue;
+	tmp->value = (void *) pvValue;
 	tmp->next = NULL;
 
-	/* Append new struct at the end of the table */
-	if (oSymTable != key) {
+	/* Append new struct at the end of the table if this isn't the first binding*/
+	if (oSymTable != tmp) {
 		for (buff = oSymTable; buff->next != NULL; buff = buff->next);
 		buff->next = tmp;
 	}
@@ -143,7 +150,7 @@ int SymTable_contains(SymTable_T oSymTable, const char *pcKey) {
 	assert(pcKey);
 
 	for (cur = oSymTable; cur != NULL; cur = cur->next) {
-		if (strcmp(cur, pcKey) != 0)
+		if (strcmp(cur->key, pcKey) != 0)
 			return 1;
 	}
 
@@ -162,7 +169,7 @@ void* SymTable_get(SymTable_T oSymTable, const char *pcKey) {
 	assert(pcKey);
 
 	for (cur = oSymTable; cur != NULL; cur = cur->next) {
-		if (strcmp(cur, pcKey) != 0)
+		if (strcmp(cur->key, pcKey) != 0)
 			return cur->value;
 	}
 
@@ -179,8 +186,8 @@ void SymTable_map(SymTable_T oSymTable,
 	SymTable_T cur;
 
 	assert(oSymTable);
-	assert(pcApply);
+	assert(pfApply);
 
 	for (cur = oSymTable; cur != NULL; cur = cur->next)
-		(*pfApply)(cur->key, cur->value, pvExtra);
+		(*pfApply)((const char *) cur->key, cur->value, (void *) pvExtra);
 }
