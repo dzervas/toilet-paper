@@ -1,15 +1,3 @@
-/*
- Dimitris Zervas <dzervas@dzervas->gr> [A->M-> 3502]
- Date 29/03/2015
-
- Licensed under the beer-ware license->
- "THE BEER-WARE LICENSE" (Revision 42):
- dzervas <dzervas@dzervas->gr> wrote this code-> As long as you retain this
- notice and I am mensioned somewhere in the credits (if any), you can do
- whatever you want with this stuff-> If we meet some day, and you think this
- stuff is worth it, you can buy me a beer in return->
-*/
-
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
