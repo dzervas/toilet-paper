@@ -28,7 +28,7 @@ struct SymTable_T {
 SymTable_T SymTable_new() {
 	SymTable_T tmp;
 
-	tmp = (SymTable_T) malloc(sizeof(struct SymTable_T));
+	tmp = malloc(sizeof(struct SymTable_T));
 	tmp->key = NULL;
 	tmp->next = NULL;
 	return tmp;
@@ -43,7 +43,6 @@ void SymTable_free(SymTable_T oSymTable) {
 		return;
 
 	free(oSymTable->key);
-	/*free(oSymTable->value);*/
 	SymTable_free(oSymTable->next);
 	free(oSymTable);
 }
@@ -58,8 +57,11 @@ unsigned int SymTable_getLength(SymTable_T oSymTable) {
 
 	assert(oSymTable);
 
-	for (tmp = oSymTable; tmp->next != NULL && tmp->key != NULL; tmp = tmp->next)
+	for (tmp = oSymTable; tmp != NULL ; tmp = tmp->next) {
+		if (tmp->key == NULL)
+			continue;
 		count++;
+	}
 
 	return count;
 }
@@ -83,7 +85,7 @@ int SymTable_put(SymTable_T oSymTable, const char *pcKey, const void *pvValue) {
 	if (tmp == NULL)
 		return 0;
 
-	tmp->key = (char *) malloc((strlen(pcKey) + 1) * sizeof(char));
+	tmp->key = malloc((strlen(pcKey) + 1) * sizeof(char));
 
 	if (strcpy(tmp->key, pcKey) == NULL)
 		return 0;
@@ -111,15 +113,13 @@ int SymTable_remove(SymTable_T oSymTable, const char *pcKey) {
 	assert(oSymTable);
 	assert(pcKey);
 
-	/* Saves computational power in case the key does not exist in the table 
-	if (!SymTable_contains(oSymTable, pcKey))
-		return 0;*/
-
-	for (cur = oSymTable; cur->next != NULL; cur = cur->next) {
+	for (cur = oSymTable; cur != NULL;) {
 		if (strcmp(cur->key, pcKey) == 0) {
-			if (cur == oSymTable)
-				oSymTable = oSymTable->next;
-			else
+			if (cur == oSymTable) {
+				free(cur->key);
+				cur->key = NULL;
+				return 1;
+			} else
 				prev->next = cur->next;
 
 			/* NULL the next in current to be able to free only the
@@ -130,6 +130,7 @@ int SymTable_remove(SymTable_T oSymTable, const char *pcKey) {
 		}
 
 		prev = cur;
+		cur = cur->next;
 	}
 
 	return 0;
@@ -147,7 +148,10 @@ int SymTable_contains(SymTable_T oSymTable, const char *pcKey) {
 	assert(pcKey);
 
 	for (cur = oSymTable; cur != NULL; cur = cur->next) {
-		if (strcmp(cur->key, pcKey) != 0)
+		if (cur->key == NULL)
+			continue;
+
+		if (strcmp(cur->key, pcKey) == 0)
 			return 1;
 	}
 
@@ -166,7 +170,10 @@ void* SymTable_get(SymTable_T oSymTable, const char *pcKey) {
 	assert(pcKey);
 
 	for (cur = oSymTable; cur != NULL; cur = cur->next) {
-		if (strcmp(cur->key, pcKey) != 0)
+		if (cur->key == NULL)
+			continue;
+
+		if (strcmp(cur->key, pcKey) == 0)
 			return cur->value;
 	}
 
