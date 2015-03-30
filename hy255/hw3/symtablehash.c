@@ -18,16 +18,20 @@
 #define HASHSIZ 509
 #define ARR oSymTable->arr
 
-typedef struct token {
+typedef struct token token;
+struct token {
 	char *key;
 	void *value;
-	SymTable_T next;
-} token;
+	token *next;
+};
 
 struct SymTable_T {
 	token **arr;
 	unsigned int siz;
 };
+
+void tokfree(token *list);
+unsigned int tokhash(const char *string, unsigned int size);
 
 /*
  Dead simple malloc.
@@ -146,7 +150,7 @@ int SymTable_remove(SymTable_T oSymTable, const char *pcKey) {
 			/* NULL the next in current to be able to free only the
 				this struct, and not the rest list */
 			cur->next = NULL;
-			SymTable_free(cur);
+			tokfree(cur);
 			return 1;
 		}
 
@@ -208,20 +212,20 @@ void SymTable_map(SymTable_T oSymTable,
                    void (*pfApply)(const char *pcKey, void *pvValue, void *pvExtra),
 		   const void *pvExtra) {
 	token *cur;
-	unsigned int h;
+	unsigned int h, i;
 
 	assert(oSymTable);
 	assert(pfApply);
 
-	h = tokhash(pcKey, oSymTable->siz);
-
-	for (cur = ARR[h]; cur != NULL; cur = cur->next)
-		(*pfApply)((const char *) cur->key, cur->value, (void *) pvExtra);
+	for (i = 0; i < oSymTable->siz; i++) {
+		for (cur = ARR[i]; cur != NULL; cur = cur->next)
+			(*pfApply)((const char *) cur->key, cur->value, (void *) pvExtra);
+	}
 }
 
 /*
  Frees allocated token struct.
- If symlist is NULL, function does nothing
+ If token is NULL, function does nothing
  */
 void tokfree(token *list) {
 	if (list == NULL)
@@ -229,14 +233,14 @@ void tokfree(token *list) {
 
 	free(list->key);
 	/*free(symlist->value);*/
-	SymTable_free(list->next);
+	tokfree(list->next);
 	free(list);
 }
 
 /*
  Returns hash address of string
  */
-unsigned int tokhash(char *string, unsigned int size) {
+unsigned int tokhash(const char *string, unsigned int size) {
 	unsigned int hash = 5381, i;
 
 	for (i = 0; string[i]!='\0'; i++){
