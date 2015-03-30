@@ -41,12 +41,12 @@ SymTable_T SymTable_new() {
 	SymTable_T tmp;
 	int i;
 
-	tmp = (SymTable_T) malloc(sizeof(struct SymTable_T));
-	tmp->arr = (token **) malloc(HASHSIZ * sizeof(token *));
+	tmp = malloc(sizeof(struct SymTable_T));
+	tmp->arr = malloc(HASHSIZ * sizeof(token *));
 	tmp->siz = HASHSIZ;
 
 	for (i = 0; i < tmp->siz; i++) {
-		tmp->arr[i] = (token *) malloc(sizeof(token));
+		tmp->arr[i] = malloc(sizeof(token));
 		tmp->arr[i]->key = NULL;
 		tmp->arr[i]->next = NULL;
 	}
@@ -79,8 +79,10 @@ unsigned int SymTable_getLength(SymTable_T oSymTable) {
 	assert(oSymTable);
 
 	for (i = 0; i < oSymTable->siz; i++) {
-		for (tmp = ARR[i]; tmp->next != NULL && tmp->key != NULL; tmp = tmp->next)
-			count++;
+		for (tmp = ARR[i]; tmp != NULL; tmp = tmp->next) {
+			if (tmp->key != NULL)
+				count++;
+		}
 	}
 
 	return count;
@@ -103,13 +105,13 @@ int SymTable_put(SymTable_T oSymTable, const char *pcKey, const void *pvValue) {
 	if (ARR[h]->key == NULL)
 		tmp = ARR[h];
 	else
-		tmp = (token *) malloc(sizeof(token));
+		tmp = malloc(sizeof(token));
 
 
 	if (tmp == NULL)
 		return 0;
 
-	tmp->key = (char *) malloc((strlen(pcKey) + 1) * sizeof(char));
+	tmp->key = malloc((strlen(pcKey) + 1) * sizeof(char));
 
 	if (strcpy(tmp->key, pcKey) == NULL)
 		return 0;
@@ -140,11 +142,16 @@ int SymTable_remove(SymTable_T oSymTable, const char *pcKey) {
 
 	h = tokhash(pcKey, oSymTable->siz);
 
-	for (cur = ARR[h]; cur->next != NULL; cur = cur->next) {
+	for (cur = ARR[h]; cur != NULL; cur = cur->next) {
+		if (cur->key == NULL)
+			continue;
+
 		if (strcmp(cur->key, pcKey) == 0) {
-			if (cur == ARR[h])
-				ARR[h] = cur->next;
-			else
+			if (cur == ARR[h]) {
+				free(cur->key);
+				cur->key = NULL;
+				return 1;
+			} else
 				prev->next = cur->next;
 
 			/* NULL the next in current to be able to free only the
@@ -175,7 +182,10 @@ int SymTable_contains(SymTable_T oSymTable, const char *pcKey) {
 	h = tokhash(pcKey, oSymTable->siz);
 
 	for (cur = ARR[h]; cur != NULL; cur = cur->next) {
-		if (strcmp(cur->key, pcKey) != 0)
+		if (cur->key == NULL)
+			continue;
+
+		if (strcmp(cur->key, pcKey) == 0)
 			return 1;
 	}
 
@@ -197,7 +207,10 @@ void* SymTable_get(SymTable_T oSymTable, const char *pcKey) {
 	h = tokhash(pcKey, oSymTable->siz);
 
 	for (cur = ARR[h]; cur != NULL; cur = cur->next) {
-		if (strcmp(cur->key, pcKey) != 0)
+		if (cur->key == NULL)
+			continue;
+
+		if (strcmp(cur->key, pcKey) == 0)
 			return cur->value;
 	}
 
@@ -232,7 +245,6 @@ void tokfree(token *list) {
 		return;
 
 	free(list->key);
-	/*free(symlist->value);*/
 	tokfree(list->next);
 	free(list);
 }

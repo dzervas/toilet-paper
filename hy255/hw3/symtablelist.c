@@ -57,10 +57,9 @@ unsigned int SymTable_getLength(SymTable_T oSymTable) {
 
 	assert(oSymTable);
 
-	for (tmp = oSymTable; tmp != NULL ; tmp = tmp->next) {
-		if (tmp->key == NULL)
-			continue;
-		count++;
+	for (tmp = oSymTable; tmp != NULL; tmp = tmp->next) {
+		if (tmp->key != NULL)
+			count++;
 	}
 
 	return count;
@@ -113,7 +112,10 @@ int SymTable_remove(SymTable_T oSymTable, const char *pcKey) {
 	assert(oSymTable);
 	assert(pcKey);
 
-	for (cur = oSymTable; cur != NULL;) {
+	for (cur = oSymTable; cur != NULL; cur = cur->next) {
+		if (cur->key == NULL)
+			continue;
+
 		if (strcmp(cur->key, pcKey) == 0) {
 			if (cur == oSymTable) {
 				free(cur->key);
@@ -130,7 +132,6 @@ int SymTable_remove(SymTable_T oSymTable, const char *pcKey) {
 		}
 
 		prev = cur;
-		cur = cur->next;
 	}
 
 	return 0;
