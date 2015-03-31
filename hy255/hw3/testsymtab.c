@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include "symtable.h"
 
+void print(const char *a, void *b, void *c) {
+	printf("%d\n", *((int*) b));
+}
+
 int main() {
 	SymTable_T a;
 	char *data1;
@@ -39,12 +43,14 @@ int main() {
 	printf("Length: %u\n", SymTable_getLength(a));
 	data1 = realloc(data1, 11000 * sizeof(char));
 	printf("Putting 100k bindings into sym table...\n");
-	for (i = 0; i < 100000; i++) {
+	for (i = 0; i < 10000; i++) {
 		data1[i/92] = 33 + (i % 92);
 		data1[(i/92) + 1] = '\0';
 		SymTable_put(a, data1, data2);
-		/*printf("Put %d in '%s': %d\n", *data2, data1, SymTable_put(a, data1, data2));*/
 	}
+	printf("Done.");
+	printf("Length: %u\n", SymTable_getLength(a));
+	SymTable_map(a, &print, NULL);
 	SymTable_free(a);
 
 	return 0;
