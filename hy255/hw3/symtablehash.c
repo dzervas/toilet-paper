@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "symtable.h"
 
@@ -16,8 +17,10 @@ struct token {
 struct SymTable_T {
 	token **arr;
 	unsigned int siz;
+	unsigned int now;
 };
 
+SymTable_T rehash(SymTable_T table);
 void tokfree(token *list);
 unsigned int tokhash(const char *string, unsigned int size);
 
@@ -30,8 +33,9 @@ SymTable_T SymTable_new() {
 	int i;
 
 	tmp = malloc(sizeof(struct SymTable_T));
-	tmp->arr = malloc(HASHSIZ * sizeof(token *));
 	tmp->siz = HASHSIZ;
+	tmp->now = 0;
+	tmp->arr = malloc(tmp->siz * sizeof(token *));
 
 	for (i = 0; i < tmp->siz; i++) {
 		tmp->arr[i] = malloc(sizeof(token));
@@ -61,19 +65,7 @@ void SymTable_free(SymTable_T oSymTable) {
  Checks for NULL oSymTable on runtime.
  */
 unsigned int SymTable_getLength(SymTable_T oSymTable) {
-	token *tmp;
-	unsigned int count = 0, i;
-
-	assert(oSymTable);
-
-	for (i = 0; i < oSymTable->siz; i++) {
-		for (tmp = ARR[i]; tmp != NULL; tmp = tmp->next) {
-			if (tmp->key != NULL)
-				count++;
-		}
-	}
-
-	return count;
+	return oSymTable->now;
 }
 
 /*
@@ -107,7 +99,14 @@ int SymTable_put(SymTable_T oSymTable, const char *pcKey, const void *pvValue) {
 	tmp->value = (void *) pvValue;
 	tmp->next = NULL;
 
-	/* Append new struct at the end of the table if this isn't the first binding*/
+	oSymTable->now++;
+	if (oSymTable->now >= oSymTable->siz && oSymTable->siz < 65521) {
+		oSymTable = rehash(oSymTable);
+		h = tokhash(pcKey, oSymTable->siz);
+		printf("1\n");
+	}
+
+	/* Append new struct at the end of the table if this isn't the first binding */
 	if (ARR[h] != tmp) {
 		for (buff = ARR[h]; buff->next != NULL; buff = buff->next);
 		buff->next = tmp;
@@ -135,6 +134,8 @@ int SymTable_remove(SymTable_T oSymTable, const char *pcKey) {
 			continue;
 
 		if (strcmp(cur->key, pcKey) == 0) {
+			oSymTable->now--;
+
 			if (cur == ARR[h]) {
 				free(cur->key);
 				cur->key = NULL;
@@ -243,9 +244,82 @@ void tokfree(token *list) {
 unsigned int tokhash(const char *string, unsigned int size) {
 	unsigned int hash = 5381, i;
 
-	for (i = 0; string[i]!='\0'; i++){
-		hash= ((hash << 5) + hash) + string[i];
-	}
+	for (i = 0; string[i] != '\0'; i++)
+		hash = ((hash << 5) + hash) + string[i];
 
 	return hash % size;
+}
+
+/* Rearanges hash table */
+SymTable_T rehash(SymTable_T table) {
+	unsigned int oldsiz, i, h;
+	token *cur, *buff, *prev;
+
+	oldsiz = table->siz;
+
+	if (table->siz < 1021)
+		table->siz = 1021;
+	else if (table->siz < 2053)
+		table->siz = 2053;
+	else if (table->siz < 4093)
+		table->siz = 4093;
+	else if (table->siz < 8191)
+		table->siz = 8191;
+	else if (table->siz < 16381)
+		table->siz = 16381;
+	else if (table->siz < 32771)
+		table->siz = 32771;
+	else if (table->siz < 65521)
+		table->siz = 65521;
+	else
+		return NULL;
+	printf("Changed from %d buckets to %d\n", oldsiz, table->siz);
+
+	table->arr = (token **) realloc(table->arr, table->siz * sizeof(token *));
+	assert(table->arr);
+
+	for (i = oldsiz; i < table->siz; i++) {
+		table->arr[i] = malloc(sizeof(token));
+		table->arr[i]->key = NULL;
+		table->arr[i]->next = NULL;
+	}
+
+	for (i = 0; i < oldsiz; i++) {
+		prev = NULL;
+		for (cur = table->arr[i]; cur != NULL; cur = cur->next) {
+			if (cur->key == NULL)
+				continue;
+
+			h = tokhash(cur->key, table->siz);
+			if (h == tokhash(cur->key, oldsiz)) {
+				prev = cur;
+				continue;
+			}
+
+			for (buff = table->arr[h]; buff->next != NULL; buff = buff->next);
+
+			if (buff->next != NULL)
+				continue;
+
+			if (buff->key == NULL) {
+				buff->key = cur->key;
+				buff->value = cur->value;
+				cur->key = NULL;
+
+				if (prev != NULL)
+					prev->next = cur->next;
+
+				if (table->arr[i] != cur)
+					tokfree(cur);
+			} else if (buff != cur) {
+					buff->next = cur;
+
+					if (prev != NULL)
+						prev->next = cur->next;
+			}
+		}
+	}
+
+		printf("%d %d\t", i, oldsiz);
+	return table;
 }
