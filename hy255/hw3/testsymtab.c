@@ -6,6 +6,7 @@ int main() {
 	SymTable_T a;
 	char *data1;
 	int *data2;
+	unsigned int i;
 	data1 = (char *) malloc(sizeof(char) * 6);
 	data2 = (int *) malloc(sizeof(int));
 	data1[0] = 'w';
@@ -34,6 +35,16 @@ int main() {
 	printf("Contains 'world': %d\n", SymTable_contains(a, "world"));
 	printf("Length: %u\n", SymTable_getLength(a));
 	printf("Data in 'world': %d\n", *((int *) SymTable_get(a, "world")));
+	printf("Put %s in hello->data1: %d\n", data1, SymTable_put(a, "hello", data1));
+	printf("Length: %u\n", SymTable_getLength(a));
+	data1 = realloc(data1, 11000 * sizeof(char));
+	printf("Putting 100k bindings into sym table...\n");
+	for (i = 0; i < 100000; i++) {
+		data1[i/92] = 33 + (i % 92);
+		data1[(i/92) + 1] = '\0';
+		SymTable_put(a, data1, data2);
+		/*printf("Put %d in '%s': %d\n", *data2, data1, SymTable_put(a, data1, data2));*/
+	}
 	SymTable_free(a);
 
 	return 0;

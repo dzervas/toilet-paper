@@ -1,4 +1,4 @@
-CFLAGS = -ansi -pedantic -Wall
+CFLAGS = -ansi -pedantic -Wall -g
 CC = cc
 
 all: list hash
