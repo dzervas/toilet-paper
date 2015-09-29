@@ -29,10 +29,10 @@ public class drawPhiwin {
     }
 
     public static void main(String[] args) {
-	StringBuilder tmp = new StringBuilder("");
-	lines = Integer.parseInt(JOptionPane.showInputDialog("Give me a number ", 4));
+	do {
+	    StringBuilder tmp = new StringBuilder("");
+	    lines = Integer.parseInt(JOptionPane.showInputDialog("Give me a number ", 4));
 
-	//do {
 	    if (lines < 4 || lines > 30)
 		System.exit(0);
 
@@ -41,6 +41,6 @@ public class drawPhiwin {
 		tmp.append(algorithm(i, '*'));
 
 	    JOptionPane.showMessageDialog(null, tmp.toString(), "Output window", JOptionPane.INFORMATION_MESSAGE);
-	//} while (lines >= 4 && lines <= 30);
+	} while (lines >= 4 && lines <= 30);
     }
 }
