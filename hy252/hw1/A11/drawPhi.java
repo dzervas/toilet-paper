@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class DrawPhi {
+public class drawPhi {
     private static Integer lines; // Number of lines to draw (user input)
     private static Integer limit; // Which line(s) will be the largest
     // Line in case of odd and lines in case of even number of lines

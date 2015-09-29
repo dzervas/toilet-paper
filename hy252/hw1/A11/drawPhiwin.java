@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import javax.swing.JOptionPane;
 
-public class DrawPhiwin2 {
+public class drawPhiwin {
     private static Integer lines; // Number of lines to draw (user input)
     private static Integer limit; // Which line(s) will be the largest
     // Line in case of odd and lines in case of even number of lines
@@ -33,13 +33,12 @@ public class DrawPhiwin2 {
 	lines = Integer.parseInt(JOptionPane.showInputDialog("Give me a number ", 4));
 
 	//do {
-	    if (lines < 4 || lines > 9)
+	    if (lines < 4 || lines > 30)
 		System.exit(0);
 
 	    limit = (lines / 2) + (lines % 2) - 1;
 	    for (int i = 0; i < lines; i++)
-		// HACK: Turn int into char through ASCII table
-		tmp.append(algorithm(i, (char) (i + 1 + 48)));
+		tmp.append(algorithm(i, '*'));
 
 	    JOptionPane.showMessageDialog(null, tmp.toString(), "Output window", JOptionPane.INFORMATION_MESSAGE);
 	//} while (lines >= 4 && lines <= 30);
