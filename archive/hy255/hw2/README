@@ -1,0 +1,18 @@
+Dimitris Zervas <dzervas@dzervas.gr> [A.M. 3502]
+Date 10/03/2015
+
+Licensed under the beer-ware license.
+"THE BEER-WARE LICENSE" (Revision 42):
+dzervas <dzervas@dzervas.gr> wrote this code (unless said otherwise in the file).
+As long as you retain this notice and I am mensioned somewhere in the credits (if any),
+you can do whatever you want with this stuff. If we meet some day, and you think this stuff is worth it,
+you can buy me a beer in return.
+
+1. Oxi, giati den iparxi tropos na vrethi to megethos tis desmevmenis mnimis
+2. Oxi, giati i parametros n ine tipou size_t, diladi unsigned
+
+I askisi ine akrivos opos to orizi i erotisi
+
+Ixa voithia apo ta man pages tis string.h
+
+5-6 ores
