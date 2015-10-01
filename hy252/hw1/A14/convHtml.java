@@ -3,6 +3,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -92,31 +94,39 @@ public class convHtml {
 	};
 
 	int i;
+	long startTime, finalTime;
 	Reader fp;
 	String buff;
 
-	System.out.println("<!DOCTYPE html>\n<html>\n<head>\n" +
+	try {
+	    fp = new FileReader(args[0]);
+	    PrintWriter out = new PrintWriter(args[0] + ".html", "UTF-8");
+	} catch (FileNotFoundException e) {
+	    fp = new InputStreamReader(new URL(args[0]).openStream(), "UTF-8");
+	    PrintStream out = System.out;
+	}
+
+	out.println("<!DOCTYPE html>\n<html>\n<head>\n" +
 			   "<meta http-equiv=\"content-type\" " +
 			   "content=\"text/html;charset=utf-8\" />\n" +
 			   "<title>" + args[0] + "</title>\n</head>\n<body>");
 
-	try {
-	    fp = new FileReader(args[0]);
-	} catch (FileNotFoundException e) {
-	    fp = new InputStreamReader(new URL(args[0]).openStream(), "UTF-8");
-	}
-
 	BufferedReader in = new BufferedReader(fp);
 
+	startTime = System.nanoTime();
 	while (in.ready()) {
 	    buff = in.readLine();
 
 	    for (i = 0; i < map.length; i++)
 		buff = buff.replace(map[i][0], map[i][1]);
 
-	    System.out.println(buff + "<br />");
+	    out.println(buff + "<br />");
 	}
+	finalTime = System.nanoTime() - startTime;
 
-	System.out.println("</body>\n</html>");
+	out.println("</body>\n</html>");
+	System.out.println("Took just " + finalTime + "ns!");
+
+	out.close();
     }
 }
