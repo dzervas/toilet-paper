@@ -2,7 +2,7 @@
 
 CLASSES = $(patsubst %.java, %, $(wildcard *.java))
 JC = javac
-JFLAGS = -g -cp jfugue.jar
+JFLAGS = -cp jfugue.jar:.
 
 .java:
 	@echo "Building file..."
@@ -14,3 +14,6 @@ clean:
 	rm -rf *.class
 
 fresh: clean all
+
+test: all
+	java $(JFLAGS) $(CLASSES)

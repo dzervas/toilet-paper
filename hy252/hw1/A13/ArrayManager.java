@@ -23,10 +23,8 @@ public class ArrayManager {
     public static void playMusic(int[] ar) {
 	Player p = new Player();
 
-	for (int i = 0; i < ar.length; i++) {
-	    System.out.println(i + ": [" + ar[i] + "]");
+	for (int i = 0; i < ar.length; i++)
 	    p.play("[" + ar[i] + "]");
-	}
     }
 
     public static void main(String[] args) {

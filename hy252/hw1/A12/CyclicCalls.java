@@ -20,7 +20,7 @@ public class CyclicCalls {
 	}
 
 	System.out.println("m2 called with argument " + arg);
-	m1((int) (arg * rand.nextDouble()));
+	m1(10);
     }
 
     public static void main(String[] args) {

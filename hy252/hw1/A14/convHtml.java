@@ -97,13 +97,14 @@ public class convHtml {
 	long startTime, finalTime;
 	Reader fp;
 	String buff;
+	PrintWriter out;
 
 	try {
 	    fp = new FileReader(args[0]);
-	    PrintWriter out = new PrintWriter(args[0] + ".html", "UTF-8");
+	    out = new PrintWriter(args[0].substring(args[0].lastIndexOf('/') + 1) + ".html", "UTF-8");
 	} catch (FileNotFoundException e) {
 	    fp = new InputStreamReader(new URL(args[0]).openStream(), "UTF-8");
-	    PrintStream out = System.out;
+	    out = new PrintWriter(args[0].substring(args[0].lastIndexOf('/') + 1).split("\\?")[0].split("#")[0] + ".html", "UTF-8");
 	}
 
 	out.println("<!DOCTYPE html>\n<html>\n<head>\n" +
@@ -127,6 +128,7 @@ public class convHtml {
 	out.println("</body>\n</html>");
 	System.out.println("Took just " + finalTime + "ns!");
 
+	fp.close();
 	out.close();
     }
 }

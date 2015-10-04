@@ -11,9 +11,6 @@ JFLAGS = -g
 all: $(CLASSES)
 
 clean:
-	rm -rf *.class
+	rm -rf *.class *.html
 
 fresh: clean all
-
-test: fresh
-	firefox *.html
