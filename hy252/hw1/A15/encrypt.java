@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 public class encrypt {
     static boolean test(String input, int K) throws IOException {
@@ -42,6 +44,21 @@ public class encrypt {
     }
     
     public static void main(String[] args) throws IOException {
+	if (args.length < 2) {
+	    String filepath = "";
+
+	    JFileChooser fileChooser = new JFileChooser();
+	    fileChooser.setDialogTitle("Select a file");
+	    int userSelection = fileChooser.showSaveDialog(null);
+
+	    if (userSelection == JFileChooser.APPROVE_OPTION)
+		filepath = fileChooser.getSelectedFile().getAbsolutePath();
+
+	    String inputk = JOptionPane.showInputDialog("Give a number: ","");
+
+	    args = new String[] { filepath, inputk };
+	}
+
 	long startTime = System.nanoTime();
 	Transform(args[0], "Encrypted" + args[0], Integer.parseInt(args[1]));
 	System.out.println("Encryption took: " + (System.nanoTime() - startTime) + "ns");
