@@ -1,0 +1,41 @@
+a:
+	1. stiva
+		stack s;
+
+		for (int i = 0; i < inputStringSize; i++)
+			s.push(inputString[i]);
+
+		for (int i = 0; i < inputStringSize; i++)
+			print(s.pop());
+
+	2. oura
+		queue s, t;
+
+		for (int i = 0; i < inputStringSize / 2; i++)
+			s.enqueue(inputString[i]);
+			t.enqueue(inputString[i + inputStringSize / 2]);
+
+		for (int i = 0; i < inputStringSize / 2; i++)
+			if (s.dequeue() != t.dequeue()) {
+				print("fail!");
+				break;
+			}
+	3. stiva
+		stack history;
+	   
+		for (int i = 0; i < k; i++)
+			print(history.pop());
+	4. oura
+		queue s;
+	   
+		for (int i = 0; i < clientNumber; i++) {
+			s.queue(getclient());
+			s.dequeue();
+		}
+	5. oura
+		queue s;
+	   
+		for (int i = 0; i < clientNumber; i++) {
+			s.queue(getclient());
+			heal(s.dequeue());
+		}
