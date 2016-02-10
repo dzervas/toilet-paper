@@ -7,6 +7,7 @@
 	.data           # init. data memory with the strings needed:
 str_n:	.asciiz "n = "
 str_s:	.asciiz "s = "
+str_err: .asciiz "Error. Please try again!\n"
 str_nl:	.asciiz "\n"
 
 	.text           # program memory:
@@ -15,13 +16,8 @@ str_nl:	.asciiz "\n"
 	.globl loop             # global symbols can be specified
 	# symbolically as breakpoints.
 
-main:	                       # (1) PRINT A PROMPT:
-	addi    $2, $0, 4       # system call code for print_string
-	la      $4, str_n       # pseudo-instruction: address of string
-	syscall                 # print the string from str_n
-	# (2) READ n (MUST be n≥2 --not checked!):
-	addi    $2, $0, 5       # system call code for read_int
-	syscall                 # read a line containing an integer
+main:
+	jal		check
 	add     $16, $2, $0     # copy returned int from $2 to n
 	# (3) INITIALIZE s and i:
 	add     $17, $0, $0     # s=0 ;
@@ -42,4 +38,24 @@ loop:	                       # (4) LOOP starts here
 	la      $4, str_nl      # pseudo-instruction: address of string
 	syscall                 # print a new-line
 	# (6) START ALL OVER AGAIN (infinite loop)
-			j       main            # unconditionally jump back to main
+	j       main            # unconditionally jump back to main
+check:
+	# (1) PRINT A PROMPT:
+	addi    $2, $0, 4       # system call code for print_string
+	la      $4, str_n       # pseudo-instruction: address of string
+	syscall                 # print the string from str_n
+	# (2) READ n (MUST be n≥2 --not checked!):
+	addi    $2, $0, 5       # system call code for read_int
+	syscall                 # read a line containing an integer
+	addi	$10, $2, -2		# Substract 2 from the given number to check if less than 0
+	bltz	$10, check_error # Throw error
+	addi	$11, $0, -32768  # Build the number -65536 to add it to the given number
+	addi	$11, $11, -32768 # to have an upper limit (sum of 65537 is 2^31)
+	add		$10, $2, $11
+	bgtz	$10, check_error # Throw error
+	j		$31				# Return to where you left of
+check_error:
+	addi    $2, $0, 4       # system call code for print_string
+	la      $4, str_err     # pseudo-instruction: address of string
+	syscall                 # print the string from str_n
+	j		check
