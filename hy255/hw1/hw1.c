@@ -12,7 +12,7 @@ you can buy me a beer in return.
 #include <stdio.h>
 #include <stdlib.h>
 
-unsigned char ordinary[][3] = {
+unsigned char table[][3] = {
 	{ 225, 'a', 0 },
 	{ 226, 'v', 0 },
 	{ 227, 'g', 0 },
@@ -62,10 +62,7 @@ unsigned char ordinary[][3] = {
 	{ 215, 'X', 0 },
 	{ 216, 'P', 'S' },
 	{ 217, 'W', 0 },
-	{ 0, 0, 0}
-};
 
-unsigned char singleacc[][3] = {
 	{ 220, 'a', '\'' },
 	{ 221, 'e', '\'' },
 	{ 222, 'h', '\'' },
@@ -81,55 +78,41 @@ unsigned char singleacc[][3] = {
 	{ 188, 'O', '\'' },
 	{ 191, 'W', '\'' },
 	{ 190, 'Y', '\'' },
-	{ 0, 0, 0}
-};
 
-unsigned char doubleacc[][4] = {
-	{ 250, 'i', '\"', 0 },
-	{ 251, 'y', '\"', 0 },
-	{ 192, 'i', '\"', '\'' },
-	{ 224, 'y', '\"', '\'' },
+	{ 250, 'i', '\"' },
+	{ 251, 'y', '\"' },
+	{ 192, 'i', '\"' }, /* dialitika & tono */
+	{ 224, 'y', '\"' }, /* dialitika & tono */
 
-	{ 218, 'I', '\"', 0 },
-	{ 219, 'Y', '\"', 0 },
-	{ 0, 0, 0, 0}
+	{ 218, 'I', '\"' },
+	{ 219, 'Y', '\"' },
+	{ 0, 0, 0 }
 };
 
 int main() {
 	unsigned char c, i;
-	unsigned char ***table;
 
 	for (c = getchar(); c != EOF; c = getchar()) {
-		printf("got that");
-		if ((c >= 193 && c <= 217) || (c >= 225 && c <= 249)) { /* Ordinary letter */
-			table = (unsigned char***) &ordinary;
-			printf("ord");
-		} else if ((c >= 220 && c <= 223) || (c >= 252 && c <= 254) || /* Accented letter */
-				c == 182 || c == 187 || (c >= 184 && c <= 186) ||
-				(c >= 190 && c <= 191)) {
-			table = (unsigned char***) &singleacc;
-			printf("sing");
-		} else if (c == 250 || c == 251 || c == 192 || /* Double accented letter */
-				c == 224 || c == 218 || c == 219) {
-			table = (unsigned char***) &doubleacc;
-			printf("doub");
+		if ((c >= 193 && c <= 217) || (c >= 225 && c <= 249) ||
+			(c >= 220 && c <= 223) || (c >= 252 && c <= 254) || /* Accented letter */
+			c == 182 || c == 187 || (c >= 184 && c <= 186) ||
+			(c >= 190 && c <= 191) || c == 250 || c == 251 ||
+			c == 192 || c == 224 || c == 218 || c == 219) {
+			for (i = 0; table[i][0] != 0; i++) {
+				if (table[i][0] == c) {
+					printf("%c", table[i][1]);
+
+					if (table[i][2])
+						printf("%c", table[i][2]);
+					if (c == 192 || c == 224)
+						printf("\'");
+
+					break;
+				}
+			}
 		} else {
 			printf("%c", c);
 			continue;
-		}
-
-		printf("going on...");
-		for (i = 0; table[0][i][0] != 0; i++) {
-			if (table[0][i][0] == c) {
-				printf("%c", table[0][i][1]);
-
-				if (table[0][i][2])
-					printf("%c", table[0][i][2]);
-				if (table == (unsigned char***) &doubleacc && doubleacc[i][3])
-					printf("%c", doubleacc[i][3]);
-
-				break;
-			}
 		}
 	}
 
