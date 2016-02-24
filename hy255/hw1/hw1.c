@@ -14,6 +14,7 @@ you can buy me a beer in return.
 
 #define MAP(ch) (table[ch - 182][0])
 
+/* Translate everything from 182 and up to avoid exceptions in checkings */
 int table[][3] = {
 	/* 182 */ { '\'', 'A' },
 
@@ -110,7 +111,11 @@ int main() {
 	/* Zero value is 182  to avoid checking if buff >= 182*/
 	buff = 182;
 
+	/* Start getting input until end of file (Ctrl-D)... */
 	for (c = getchar(); c != EOF; c = getchar()) {
+		/* If we match the difthongs, change the character given (c)
+		 * if the difthong is not completed and the buffer is non-zero (non 182)
+		 * show the buffer */
 		if (c >= 182 && c < 255) {
 			if (MAP(buff) == 'm' && (MAP(c) == 'p' || MAP(c) == 'P'))
 				c = 'b';
@@ -121,9 +126,10 @@ int main() {
 			else if (MAP(buff) == 'N' && (MAP(c) == 't' || MAP(c) == 'T'))
 				c = 'D';
 			else if (buff != 182)
-				printf("%c", MAP(buff));
+				putchar(MAP(buff));
 		}
 
+		/* Check if the character given is translatable through the table */
 		if (c >= 182 && c < 255) {
 			switch (MAP(c)) {
 				case 'm':
@@ -136,18 +142,20 @@ int main() {
 					buff = 182;
 					break;
 			}
-
+			/* If the buffer is non-zero and we just got it do nothing else
+			 * to decide if it's a difthong or not */
 			if (buff == c && buff != 182)
 				continue;
 
-			printf("%c", MAP(c));
+			/* Show the mapped character and pottential attributes */
+			putchar(MAP(c));
 
 			if (table[c - 182][1])
-				printf("%c", table[c - 182][1]);
+				putchar(table[c - 182][1]);
 			if (c == 192 || c == 224)
 				printf("\"");
 		} else {
-			printf("%c", c);
+			putchar(c);
 			buff = 182;
 		}
 	}
