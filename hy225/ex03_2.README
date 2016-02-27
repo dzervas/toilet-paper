@@ -1,30 +1,35 @@
-I
-=======
+# I
 
 The order I allocated this is: a, z, A, Z, 0, 1, 9
 This is the memory dump:
 
-007a|0061 z, a
-005a|0041 Z, A
-0031|0030 1, 0
-0000|0039 <empty>, 9
+
+
+> 007a | 0061 | z  a
+
+> 005a | 0041 | Z  A
+
+> 0031 | 0030 | 1  0
+
+> 0000 | 0039 | \0 9
 
 From this we understand that the computer I use is Little-Endian (Intel Core i5)
 
-II
-=======
+# II
 
 Memory map (saved in little-endian computer):
-Hex: 007A | 7978
-Dec: 00122| 31096
 
-Readed as int (big-endian):		(0x78 << 6) 2013265920 + (0x79 << 4) 7929856 + (0x7A << 2) 31232 + (0x00 << 0) 0 = 2021227008
-Readed as int (little-endian):	(0x78 << 0) 120 + (0x79 << 2) 30976 + (0x7A << 4) 7995392 + (0x00 << 6) 0 = 8026488
+> Hex: 007A | 7978
+
+> Dec: 00122 | 31096
+
+Readed as int (big-endian):		`(0x78 << 6) 2013265920 + (0x79 << 4) 7929856 + (0x7A << 2) 31232 + (0x00 << 0) 0 = 2021227008`
+
+Readed as int (little-endian):	`(0x78 << 0) 120 + (0x79 << 2) 30976 + (0x7A << 4) 7995392 + (0x00 << 6) 0 = 8026488`
 
 If the dump was of a big-endian computer, the results would be exactly the opposite.
 
-III
-=======
+# III
 
 QtSpim report "268500992" when I print "xyz\0" as integer.
 The result is different than what we expected in section II because,
