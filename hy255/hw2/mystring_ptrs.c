@@ -112,16 +112,12 @@ int ms_ncompare(const char *s1, const char *s2, size_t n) {
 	assert(s2);
 
 	for (i = 0 ; i < n; i++) {
-		if (*(s2 + i) == '\0')
-			return  1;
-		if (*(s1 + i) < *(s2 + i))
-			return -1;
-		if (*(s1 + i) > *(s2 + i))
-			return  1;
-	}
+		if (*(s1 + i) != *(s2 + i))
+			return (*(s2 + i) - *(s1 + i));
 
-	if (*(s2 + i) != '\0')
-		return -1;
+		if (*(s1 + i) == '\0' || *(s2 + i) == '\0')
+			break;
+	}
 
 	return 0;
 }

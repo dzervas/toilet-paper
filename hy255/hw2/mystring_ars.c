@@ -114,7 +114,7 @@ int ms_ncompare(const char s1[], const char s2[], size_t n) {
 
 	for (i = 0 ; i < n; i++) {
 		if (s1[i] != s2[i])
-			return s2[i] - s1[i];
+			return (s2[i] - s1[i]);
 
 		if (s1[i] == '\0' || s2[i] == '\0')
 			break;
