@@ -33,11 +33,8 @@ size_t ms_length(const char string[]) {
  It is a checked runtime error for src and n to be NULL or 0.
 */
 char *ms_copy(char dest[], const char src[]) {
-	size_t i;
-	assert(src); /* Works because NULL and FALSE are identical. */
-
-	for (i = 0; src[i] != '\0'; i++)
-		dest[i] = src[i];
+	/* Copy the letters of the src AND the null byte */
+	ms_ncopy(dest, src, ms_length(src) + 1);
 
 	return dest;
 }
@@ -50,7 +47,7 @@ char *ms_copy(char dest[], const char src[]) {
 char *ms_ncopy(char dest[], const char src[], size_t n) {
 	size_t i;
 	assert(src); /* Works because NULL and FALSE are identical. */
-//	assert(n);
+	/*		assert(n);*/
 
 	for (i = 0; i < n && src[i] != '\0'; i++)
 		dest[i] = src[i];
@@ -68,16 +65,8 @@ char *ms_ncopy(char dest[], const char src[], size_t n) {
  It is a checked runtime error for dest, src to be NULL.
 */
 char *ms_concat(char dest[], const char src[]) {
-	size_t dest_len, i;
-
-	assert(dest); /* Works because NULL and FALSE are identical. */
-	assert(src);
-
-	dest_len = ms_length(dest);
-
-	for (i = 0 ; src[i] != '\0' ; i++)
-		dest[dest_len + i] = src[i];
-	dest[dest_len + i] = '\0';
+	/* Concatonate the letters of the src AND the null byte */
+	ms_nconcat(dest, src, ms_length(src) + 1);
 
 	return dest;
 }
@@ -92,7 +81,6 @@ char *ms_nconcat(char dest[], const char src[], size_t n) {
 
 	assert(dest); /* Works because NULL and FALSE are identical. */
 	assert(src);
-//	assert(n);
 
 	dest_len = ms_length(dest);
 
@@ -110,26 +98,7 @@ char *ms_nconcat(char dest[], const char src[], size_t n) {
  It is a checked runtime error for s1, s2.
 */
 int ms_compare(const char s1[], const char s2[]) {
-	size_t s1_len, i;
-
-	assert(s1);
-	assert(s2);
-
-	s1_len = ms_length(s1);
-
-	for (i = 0 ; i < s1_len; i++) {
-		if (s2[i] == '\0')
-			return  1;
-		if (s2[i] > s1[i])
-			return -1;
-		if (s1[i] > s2[i])
-			return  1;
-	}
-
-	if (s2[i] != '\0')
-		return -1;
-
-	return 0;
+	return ms_ncompare(s1, s2, ms_length(s1));
 }
 
 /*
@@ -138,18 +107,15 @@ int ms_compare(const char s1[], const char s2[]) {
  It is a checked runtime error for s1, s2.
 */
 int ms_ncompare(const char s1[], const char s2[], size_t n) {
-	size_t s1_len, i;
+	size_t i;
 
 	assert(s1);
 	assert(s2);
-//	assert(n);
 
-	s1_len = ms_length(s1);
-
-	for (i = 0 ; i < s1_len && i < n; i++) {
+	for (i = 0 ; i < n; i++) {
 		if (s2[i] == '\0')
 			return  1;
-		if (s2[i] > s1[i])
+		if (s1[i] < s2[i])
 			return -1;
 		if (s1[i] > s2[i])
 			return  1;
@@ -167,13 +133,15 @@ int ms_ncompare(const char s1[], const char s2[], size_t n) {
  It is a checked runtime error for haystack, needle
 */
 char *ms_search(const char haystack[], const char needle[]) {
-	size_t i;
+	size_t i, needle_lng;
 
 	assert(haystack);
 	assert(needle);
 
-	for (i = 0; haystack[i] != '\0' && ms_length(&haystack[i]) > ms_length(needle); i++) {
-		if (ms_compare(needle, &haystack[i]) == 0)
+	needle_lng = ms_length(needle);
+
+	for (i = 0; haystack[i] != '\0' && ms_length(&haystack[i]) > needle_lng; i++) {
+		if (ms_ncompare(&haystack[i], needle, needle_lng) == 0)
 			return (char *) &haystack[i];
 	}
 
