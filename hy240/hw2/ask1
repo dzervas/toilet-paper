@@ -1,0 +1,53 @@
+I assume that this pseudolang parses the whole code serially
+For example "a = a.next" makes sense. "a.next" is computed and "replaced" before
+assigning the value to "a"
+Also the language works with pointers, so "b = a; b.data = 8" is the same with
+"a.data = 8"
+
+## A
+
+// Example struct
+struct {
+	   data
+	   next
+} node
+
+circle = False
+for (cur = L; cur.next && !circle; cur = cur.next):
+	for (cur2 = L; cur2.next; cur2 = cur2.next):
+		if (cur.next == cur2):
+		   circle = True
+		   break
+print circle
+
+Algorithm has O(n^2) complexity
+If the code was envirnment-specific we could check if the next pointer is exactly
+the size of the struct after the current pointer, but this would require
+that the nodes are allocated dynamically.
+
+## B
+
+struct {
+	   data
+	   next
+} node
+
+for (cur = L; cur.next; cur = cur.next):
+	if ((cur.next).data == cur.data):
+		cur.next = (cur.next).next
+
+## G
+
+struct {
+	   data
+	   next
+} node
+
+for (cur = L; cur.next; cur = cur.next):
+	for (cur2 = cur.next && prev = cur; cur2.next; cur2 = cur2.next):
+		if (cur.data == cur2.data):
+			prev.next = cur2.next
+		else
+			prev = cur2
+
+Algorithm has O(n^2) complexity (actually arithmetic progression)

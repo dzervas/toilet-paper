@@ -1,0 +1,1 @@
+The reason that there is no beqi or bnei is that the the commands would load the immediates to the registers

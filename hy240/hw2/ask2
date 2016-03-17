@@ -1,0 +1,16 @@
+Procedure SelectionSort(list A) {
+	for (cur = A; cur.next; cur = cur.next) {
+		swp = cur;
+		for (cur2 = cur.next; cur2.next; cur2 = cur2.next)
+			if (cur2.pid < swp.pid)
+				swp = cur2;
+
+		swap(cur, swp);
+	}
+}
+
+Procedure swap(list A, list B) {
+	tmp = A.next;
+	A.next = B.next;
+	B.next = tmp.next;
+}

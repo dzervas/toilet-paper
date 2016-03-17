@@ -1,0 +1,21 @@
+	addi $s3, $0, -1
+Loop:
+	addi $s3, $s3, 1
+	sll $t1, $s3, 2
+	add $t1, $t1, $s6
+	lw  $t0, 0($t1)
+	bne $t0, $s5, Loop
+	j	Exit
+Exit: ...
+
+Commands executed with old code:
+		 1 initilization
+		 6*9 on each loop
+		 4 on last loop
+		 = 59 commands
+
+Commands executed with new code:
+		 1 initilization
+		 5*9 on each loop
+		 6 on last loop
+		 = 52 commands

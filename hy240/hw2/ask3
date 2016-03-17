@@ -1,0 +1,27 @@
+Procedure Equal(list L1, list L2) {
+	for(cur1 = L1 && cur2 = L2; cur1.next && cur2.next; cur1 = cur1.next && cur2 = cur2.next)
+		if (cur1.data != cur2.data)
+			return False;
+
+	// Different sizes
+	if (cur1.next || cur2.next || cur1.data != cur2.data)
+	    return False
+
+	return True;
+}
+
+I achived better complexity than the one that the excersise asked for: O(n3) where
+n3 is the lesser of n1 and n2
+For the sake of the excersise here is the exact complexity you asked for:
+
+Procedure Equal(list L1, list L2) {
+	for(cur1 = L1 && cur2 = L2; cur1.next; cur1 = cur1.next && cur2 = cur2.next)
+		if (cur1.data != cur2.data || !cur2.next)
+			return False;
+
+	for(cur1 = L1 && cur2 = L2; cur2.next; cur1 = cur1.next && cur2 = cur2.next)
+		if (cur1.data != cur2.data || !cur1.next)
+			return False;
+
+	return True;
+}
