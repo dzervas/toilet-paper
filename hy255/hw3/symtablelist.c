@@ -69,7 +69,7 @@ int SymTable_put(SymTable_T oSymTable, const char *pcKey, const void *pvValue) {
 	else
 		tmp = SymTable_new();
 
-	if (tmp == NULL)
+	if (tmp == NULL || SymTable_contains(oSymTable, pcKey))
 		return 0;
 
 	tmp->key = malloc((strlen(pcKey) + 1) * sizeof(char));
