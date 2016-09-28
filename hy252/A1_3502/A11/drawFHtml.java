@@ -1,6 +1,6 @@
 import java.io.*;
 
-public class drawPhiHtml {
+public class drawFHtml {
     public static void main(String[] args) throws IOException {
 	Integer tmp = Integer.parseInt(args[0]) * 10;
 	PrintWriter out = new PrintWriter("PhiF.html", "UTF-8");

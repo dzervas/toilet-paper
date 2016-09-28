@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import javax.swing.JOptionPane;
 
-public class drawPhiwin2 {
+public class drawFwin2 {
 	private static Integer lines; // Number of lines to draw (user input)
 	private static Integer limit; // Which line & column will be the middle
 

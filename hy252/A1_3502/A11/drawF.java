@@ -1,7 +1,6 @@
 import java.util.Scanner;
-import javax.swing.JOptionPane;
 
-public class drawPhiwin {
+public class drawF {
 	private static Integer lines; // Number of lines to draw (user input)
 	private static Integer limit; // Which line & column will be the middle
 
@@ -23,22 +22,20 @@ public class drawPhiwin {
 	}
 
 	public static void main(String[] args) {
-		do {
-			StringBuilder tmp = new StringBuilder("");
-			lines = Integer.parseInt(JOptionPane.showInputDialog("Give me a number ", 4));
+		Scanner in = new Scanner(System.in);
 
-			if (lines < 4 || lines > 30) {
-				JOptionPane.showMessageDialog(null, "Allowed range is 4-30", "DrawFwin", JOptionPane.ERROR_MESSAGE);
-				System.exit(0);
-			}
+		lines = Integer.parseInt(args[0]);
+
+		do {
+			if (lines < 4 || lines > 30)
+				break;
 
 			limit = (lines / 2) + 1;
-			for (int i = 0; i < lines; i++) {
-				tmp.append(algorithm(i, '*'));
-				tmp.append("\n");
-			}
+			for (int i = 0; i < lines; i++)
+				System.out.println(algorithm(i, '*'));
 
-			JOptionPane.showMessageDialog(null, tmp.toString(), "Output window", JOptionPane.INFORMATION_MESSAGE);
-		} while (true);
+			System.out.println("Feed me moar: ");
+			lines = in.nextInt();
+		} while (lines >= 4 && lines <= 30);
 	}
 }
