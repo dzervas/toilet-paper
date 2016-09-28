@@ -4,7 +4,6 @@ public class drawPhi {
 	private static Integer lines; // Number of lines to draw (user input)
 	private static Integer limit; // Which line & column will be the middle
 
-	// Reusable for the next homework
 	private static StringBuilder algorithm(int line, char character) {
 		StringBuilder out = new StringBuilder("");
 		int i;
