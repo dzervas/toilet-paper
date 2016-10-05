@@ -1,27 +1,33 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.URL;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 
 public class Downloader {
-	static int download(String address, String output) {
-		StringBuilder tmp = new StringBuilder("");
+	static int download(String address, File output) {
+		BufferedReader in;
+		PrintWriter out;
+		URL url;
+
 		long startTime;
 		long endTime;
 		int c;
 
 		try {
-
-			URL url = new URL(address);
-			BufferedReader in = new BufferedReader(
-					new InputStreamReader(url.openStream(), "UTF-8"));
+			out = new PrintWriter(output);
+			url = new URL(address);
+			in = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
 
 			startTime = System.nanoTime();
+
 			do {
 				c = in.read();
-				tmp.append((char) c);
+				out.print((char) c);
 			} while (c != -1);
+
 			endTime = System.nanoTime();
 
 			in.close();
@@ -30,7 +36,6 @@ public class Downloader {
 			return -1;
 		}
 
-		//System.out.print(tmp.toString());
 		System.out.print("Download time: " + (endTime - startTime) + "ns");
 
 		return 0;
@@ -38,13 +43,13 @@ public class Downloader {
 
 	public static void main(String[] a) {
 		JFileChooser chooser;
+		String toDownload;
 		int returnVal;
 
-		String toDownload = JOptionPane.showInputDialog("Δώστε την διεύθυνση ","");
-
+		toDownload = JOptionPane.showInputDialog("Δώστε την διεύθυνση ","");
 		chooser = new JFileChooser();
+
 		if(chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-			System.out.println("You chose to open this file: " + chooser.getSelectedFile());
 			download(toDownload, chooser.getSelectedFile());
 		}
 	}
