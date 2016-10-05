@@ -2,8 +2,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+
 public class Downloader {
-	static int download(String address) {
+	static int download(String address, String output) {
 		StringBuilder tmp = new StringBuilder("");
 		long startTime;
 		long endTime;
@@ -28,14 +30,22 @@ public class Downloader {
 			return -1;
 		}
 
-		System.out.print(tmp.toString());
+		//System.out.print(tmp.toString());
+		System.out.print("Download time: " + (endTime - startTime) + "ns");
 
 		return 0;
 	}
 
 	public static void main(String[] a) {
+		JFileChooser chooser;
+		int returnVal;
+
 		String toDownload = JOptionPane.showInputDialog("Δώστε την διεύθυνση ","");
-		System.out.println(toDownload);
-		download(toDownload);
+
+		chooser = new JFileChooser();
+		if(chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			System.out.println("You chose to open this file: " + chooser.getSelectedFile());
+			download(toDownload, chooser.getSelectedFile());
+		}
 	}
 }
