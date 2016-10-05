@@ -6,15 +6,11 @@ public class MusicMaker {
 
 		result = new int[a.length + b.length];
 
-		//System.out.print("\na: ");
 		for (int i = 0; i < a.length; i++) {
-			//System.out.print(a[i]);
 			result[i] = a[i];
 		}
 
-		//System.out.print("\nb: ");
 		for (int i = 0; i < b.length; i++) {
-			//System.out.print(b[i]);
 			result[a.length + i] = b[i];
 		}
 
@@ -53,8 +49,8 @@ public class MusicMaker {
 		}
 
 		System.out.println(result);
-		//Player p = new Player();
-		//p.play(result.toString());
+		Player p = new Player();
+		p.play(result.toString());
 	}
 
 	public static void main(String[] args) {
