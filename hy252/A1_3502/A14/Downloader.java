@@ -31,6 +31,7 @@ public class Downloader {
 			endTime = System.nanoTime();
 
 			in.close();
+			out.close();
 		} catch (Exception e) {
 			System.out.println(e);
 			return -1;
