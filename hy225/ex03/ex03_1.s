@@ -1,15 +1,23 @@
 	.data
 	.align 2
-a:
-	.space 32
+
+a:				.space 32
+
 str_prompt:		.asciiz "Give me 8 nums: "
 str_space:		.asciiz " "
 str_sep:		.asciiz "---------------------\n"
 str_nlnl:		.asciiz "\n\n"
+
 	.text
 	.globl main
 	.globl getnum
 	.globl putnum
+
+# $10: 
+# $11: Pointer to a
+# $12: Index for a
+
+# Note: `sll` command is shift logical left (to, from, times)
 
 main:
 	la		$11, a
@@ -50,7 +58,7 @@ getnum:
 	jr		$31
 
 putnum:
-	# Pointer stuff (construct index*4+address and increment index)
+	# Pointer stuff (construct index*4+address and decrement index)
 	sll		$8, $12, 2
 	add		$8, $8, $11
 	addi	$12, $12, -1
