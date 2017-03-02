@@ -1,1 +1,2 @@
-The reason that there is no beqi or bnei is that the the commands would load the immediates to the registers
+The reason is because `beq` and `bne` are R-format commands already, so adding
+another immediate would be out of the 32 bit limit.

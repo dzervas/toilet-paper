@@ -5,7 +5,6 @@ Loop:
 	add $t1, $t1, $s6
 	lw  $t0, 0($t1)
 	bne $t0, $s5, Loop
-	j	Exit
 Exit: ...
 
 Commands executed with old code:
@@ -16,6 +15,5 @@ Commands executed with old code:
 
 Commands executed with new code:
 		 1 initilization
-		 5*9 on each loop
-		 6 on last loop
-		 = 52 commands
+		 5*10 on each loop
+		 = 51 commands

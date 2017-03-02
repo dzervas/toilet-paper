@@ -1,7 +1,7 @@
 # A
 
 If "li" command has op code "001" then:
-`RR $r` is the same with `li <($r register address * 4) + 2>
+`RR $r` is the same with `li <($r register address = 2^2) + (funct = 2)>` = `li 6`
 
 # B
 
@@ -12,21 +12,21 @@ We can't have more than 4 r-format commands as we have no more available bits
 
 So the commands will be:
 
-> op=111 funct=00
+> op=000 funct=00
 
-> op=111 funct=01
+> op=000 funct=01
 
-> op=111 funct=10
+> op=000 funct=10
 
-> op=111 funct=11
+> op=000 funct=11
 
 # C
 
 0---- \----\
        \    \
-1------ \AND \-----+--------- R-Format
+1------ \AND \-----+--------- I-Format
        /     /     |    \-----\
-2---- /-----/      +---- \ NOT \ ------ I-Format
+2---- /-----/      +---- \ NOT \ ------ R-Format
                          /-----/
 3
 
@@ -42,18 +42,18 @@ So the commands will be:
 
 R-Format Commands:
 
-> op=110 funct=00
+> op=000 funct=00
 
-> op=110 funct=01
+> op=000 funct=01
 
-> op=110 funct=10
+> op=000 funct=10
 
-> op=110 funct=11
+> op=000 funct=11
 
-> op=111 funct=00
+> op=001 funct=00
 
-> op=111 funct=01
+> op=001 funct=01
 
-> op=111 funct=10
+> op=001 funct=10
 
-> op=111 funct=11
+> op=001 funct=11
