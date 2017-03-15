@@ -143,9 +143,27 @@ void
 keygen(unsigned char *password, unsigned char *key, unsigned char *iv,
     int bit_mode)
 {
+	printf("pass: %s\nkey: %s\nbitmode: %d\n", password, key, bit_mode);
 
-	/* TODO Task A */
+	const EVP_MD *hashmd;
+	EVP_MD_CTX hashctx;
+	unsigned int len;
 
+	OpenSSL_add_all_digests();
+
+	hashmd = EVP_sha1();
+
+	EVP_MD_CTX_init(&hashctx);
+
+	// TODO: 128/256-bit key?
+	EVP_DigestInit_ex(&hashctx, hashmd, NULL);
+	EVP_DigestUpdate(&hashctx, password, strlen((const char *) password));
+	EVP_DigestFinal_ex(&hashctx, key, &len);
+
+	EVP_MD_CTX_cleanup(&hashctx);
+
+	printf("pass: %s\nbitmode: %d\nlen: %d\nkey: ", password, bit_mode, len);
+	print_hex(key, len);
 }
 
 
@@ -234,6 +252,8 @@ main(int argc, char **argv)
 	char *output_file;		/* path to the output file */
 	unsigned char *password;	/* the user defined password */
 
+	unsigned char key[256], iv[256];
+
 	/* Init arguments */
 	input_file = NULL;
 	output_file = NULL;
@@ -296,6 +316,7 @@ main(int argc, char **argv)
 
 
 	/* Keygen from password */
+	keygen(password, key, iv, bit_mode);
 
 
 	/* Operate on the data according to the mode */
