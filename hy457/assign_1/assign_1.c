@@ -202,9 +202,6 @@ gen_cmac(unsigned char *data, size_t data_len, unsigned char *key,
 	CMAC_Final(ctx, cmac, &len);
 
 	CMAC_CTX_free(ctx);
-
-	print_hex(cmac, len);
-	printf("CMAC len: %zu", len);
 }
 
 
@@ -213,13 +210,7 @@ gen_cmac(unsigned char *data, size_t data_len, unsigned char *key,
  */
 	int
 verify_cmac(unsigned char *cmac1, unsigned char *cmac2) {
-	int verify;
-
-	verify = 0;
-
-	/* TODO Task E */
-
-	return verify;
+	return (memcmp(cmac1, cmac2, BLOCK_SIZE) == 0);
 }
 
 	unsigned char *
@@ -274,6 +265,7 @@ main(int argc, char **argv) {
 	unsigned long input_len;	/* length of input */
 	unsigned char *output_data;	/* data for output */
 	unsigned long output_len;	/* length of output */
+	unsigned char tmp_cmac[BLOCK_SIZE];
 
 	unsigned char key[256], iv[256];
 
@@ -359,9 +351,22 @@ main(int argc, char **argv) {
 			break;
 		/* sign */
 		case 2:
+			output_len = input_len - (input_len % BLOCK_SIZE) + 2*BLOCK_SIZE;
+			output_data = malloc(output_len);
+
+			encrypt(input_data, input_len, key, iv, output_data, bit_mode);
+			gen_cmac(input_data, input_len, key, output_data + (output_len - BLOCK_SIZE), bit_mode);
 			break;
 		/* verify */
 		case 3:
+			output_data = malloc(input_len);
+			output_len = decrypt(input_data, input_len - BLOCK_SIZE, key, iv, output_data,
+					bit_mode);
+
+			gen_cmac(output_data, output_len, key, tmp_cmac, bit_mode);
+
+			if (!verify_cmac(tmp_cmac, input_data + (input_len - BLOCK_SIZE)))
+				return 1;
 			break;
 		default:
 			break;
