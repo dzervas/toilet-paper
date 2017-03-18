@@ -27,6 +27,7 @@ void gen_cmac(unsigned char *, size_t, unsigned char *, unsigned char *, int);
 int verify_cmac(unsigned char *, unsigned char *);
 
 unsigned char *read_file(char *, unsigned long *);
+void write_file(char *, unsigned char *, unsigned long);
 
 /*
  * Prints the hex value of the input
@@ -352,6 +353,9 @@ main(int argc, char **argv) {
 			break;
 		/* decrypt */
 		case 1:
+			output_data = malloc(input_len);
+			output_len = decrypt(input_data, input_len, key, iv, output_data,
+					bit_mode);
 			break;
 		/* sign */
 		case 2:
