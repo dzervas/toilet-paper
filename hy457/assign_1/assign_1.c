@@ -141,29 +141,14 @@ check_args(char *input_file, char *output_file, unsigned char *password,
  */
 void
 keygen(unsigned char *password, unsigned char *key, unsigned char *iv,
-    int bit_mode)
-{
-	printf("pass: %s\nkey: %s\nbitmode: %d\n", password, key, bit_mode);
+    int bit_mode) {
+	EVP_CIPHER *hashctx = (EVP_CIPHER *) EVP_aes_128_ecb();
+	
+	if (bit_mode == 256)
+		hashctx = (EVP_CIPHER *) EVP_aes_256_ecb();
 
-	const EVP_MD *hashmd;
-	EVP_MD_CTX hashctx;
-	unsigned int len;
-
-	OpenSSL_add_all_digests();
-
-	hashmd = EVP_sha1();
-
-	EVP_MD_CTX_init(&hashctx);
-
-	// TODO: 128/256-bit key?
-	EVP_DigestInit_ex(&hashctx, hashmd, NULL);
-	EVP_DigestUpdate(&hashctx, password, strlen((const char *) password));
-	EVP_DigestFinal_ex(&hashctx, key, &len);
-
-	EVP_MD_CTX_cleanup(&hashctx);
-
-	printf("pass: %s\nbitmode: %d\nlen: %d\nkey: ", password, bit_mode, len);
-	print_hex(key, len);
+	EVP_BytesToKey(hashctx, EVP_sha1(), NULL, password,
+					strlen((const char *)password), 1, key, iv);
 }
 
 
@@ -172,11 +157,7 @@ keygen(unsigned char *password, unsigned char *key, unsigned char *iv,
  */
 void
 encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
-    unsigned char *iv, unsigned char *ciphertext, int bit_mode)
-{
-
-	/* TODO Task B */
-
+    unsigned char *iv, unsigned char *ciphertext, int bit_mode) {
 }
 
 
