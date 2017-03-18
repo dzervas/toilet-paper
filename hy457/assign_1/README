@@ -1,0 +1,10 @@
+Klidaras
+========
+
+Simple tool to encrypt/decrypt/sign/verify stuff using AES-ECB.
+It's using the EVP OpenSSL library.
+
+Pass -h to it and it will tell you its story.
+
+Avoid saying the words "shatter" and "initilization vector" while near him, it
+makes him angry (and sometimes cry violently).
