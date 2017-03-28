@@ -246,9 +246,44 @@ int unavailable_poi(int pid, int lid) {
 *         false on failure
 */
 int register_user(int uid) {
+	usr_t *tmp, *it;
+
+	/* Initialize the new node */
+	tmp = malloc(sizeof(usr_t));
+
+	if (!tmp) {
+		fprintf(stderr, "Failed to allocate new node for usr_t!\n");
+		return 0;
+	}
+
+	tmp->uid = uid;
+	tmp->interesting_poi = NULL;
+	tmp->next = NULL;
+
+	/* Place the new node */
+	if (!users_list) {
+		/* In the start if list is empty */
+		users_list = tmp;
+		tmp->next = users_sentinel;
+	} else {
+		/* Search the list for the last real user */
+		for (it = users_list; it->next->uid != -1; it = it->next);
+		it->next = tmp;
+		tmp->next = users_sentinel;
+	}
+
+	printf("R %d\n\tUsers = ", uid);
+	for (it = users_list; it->uid != -1; it = it->next) {
+		if (it->next->uid != -1)
+			printf("%d, ", it->uid);
+		else
+			printf("%d", it->uid);
+	}
+	printf("\nDONE\n");
+
 	return 1;
 }
-        
+
 /**
 * @brief User is interested in POI
 * 
@@ -261,7 +296,7 @@ int register_user(int uid) {
 int interesting_poi(int uid, int upid) {
 	return 1;
 }
-        
+
 /**
 * @brief Group users
 * 
@@ -275,7 +310,7 @@ int interesting_poi(int uid, int upid) {
 int group_users(int uid1, int uid2, int uid3) {
 	return 1;
 }
-        
+
 /**
 * @brief Calculate the distance between locations
 * 
@@ -290,7 +325,7 @@ int group_users(int uid1, int uid2, int uid3) {
 int sightseeing_distance(int lid, int pid1, int pid2, int pid3) {
 	return 1;
 }
-        
+
 /**
 * @brief Print all locations
 *
@@ -300,7 +335,7 @@ int sightseeing_distance(int lid, int pid1, int pid2, int pid3) {
 int print_locations() {
 	return 1;
 }
-        
+
 /**
 * @brief Print all users
 *
@@ -310,7 +345,7 @@ int print_locations() {
 int print_users() {
 	return 1;
 }
-        
+
 /**
 * @brief Search for user
 * 
@@ -343,8 +378,10 @@ int main(int argc, char** argv)
 	char buff[BUFFER_SIZE], event;
 
 	/* Initialize global vars */
+	locations_list = NULL;
+	users_list = NULL;
+
 	users_sentinel = malloc(sizeof(usr_t));
-	users_list = users_sentinel;
 	users_sentinel->uid = -1;
 	users_sentinel->interesting_poi = NULL;
 	users_sentinel->next = NULL;
