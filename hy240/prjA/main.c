@@ -447,6 +447,9 @@ int print_locations() {
 
 	printf("X\nLOCATIONS:");
 	for (it = locations_list; it; it = it->next) {
+		if (!it->poi_list)
+			continue;
+
 		printf("\n\tLocation = ");
 
 		for (pit = it->poi_list; pit; pit = pit->next) {
