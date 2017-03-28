@@ -24,19 +24,6 @@
 #define DPRINT(...)
 #endif /* DEBUG */
 
-/*_print_list(loc->poi_list, &loc->poi_list->pid - &loc->poi_list, &loc->poi_list->next - &loc->poi_list);*/
-/*void _print_list(void *list, unsigned int print_offset, unsigned int next_offset) {*/
-	/*void *it;*/
-
-	/*for (it = list; it; it = (it + next_offset)) {*/
-		/*if (it + next_offset)*/
-			/*printf("%d, ", (int) (it + print_offset));*/
-		/*else*/
-			/*printf("%d", (int) (it + print_offset));*/
-	/*}*/
-	/*printf("\nDONE\n");*/
-/*}*/
-
 /**
 * @brief Add a new location to the system
 *
@@ -455,6 +442,22 @@ int sightseeing_distance(int lid, int pid1, int pid2, int pid3) {
 *         false on failure
 */
 int print_locations() {
+	loc_t *it;
+	poi_t *pit;
+
+	printf("X\nLOCATIONS:");
+	for (it = locations_list; it; it = it->next) {
+		printf("\n\tLocation = ");
+
+		for (pit = it->poi_list; pit; pit = pit->next) {
+			if (pit->next)
+				printf("%d:%d:%d, ", pit->pid, pit->type, pit->distance);
+			else
+				printf("%d:%d:%d", pit->pid, pit->type, pit->distance);
+		}
+	}
+	printf("\nDONE\n");
+
 	return 1;
 }
 
