@@ -174,12 +174,12 @@ int add_poi_to_location(int pid, int type, int distance, int lid) {
 		}
 	}
 
-	printf("P %d %d %d\n\tLocations = ", pid, lid, distance);
+	printf("P %d %d %d\n\tLocation = ", pid, lid, distance);
 	for (it = loc->poi_list; it; it = it->next) {
 		if (it->next)
-			printf("%d:%d:%d->%d, ", it->pid, it->type, it->distance, (it->prev) ? it->prev->pid : -1);
+			printf("%d:%d:%d, ", it->pid, it->type, it->distance);
 		else
-			printf("%d:%d:%d->%d", it->pid, it->type, it->distance, (it->prev) ? it->prev->pid : -1);
+			printf("%d:%d:%d", it->pid, it->type, it->distance);
 	}
 	printf("\nDONE\n");
 
@@ -196,6 +196,44 @@ int add_poi_to_location(int pid, int type, int distance, int lid) {
 *         false on failure
 */
 int unavailable_poi(int pid, int lid) {
+	poi_t *poi, *it;
+	loc_t *loc;
+
+	/* Search for location and POI asked according to IDs */
+	for (loc = locations_list; loc && loc->lid != lid; loc = loc->next);
+
+	if (!loc) {
+		fprintf(stderr, "Could not find %d lid to remove poi %d\n", lid, pid);
+		return 0;
+	}
+
+	for (poi = loc->poi_list; poi && poi->pid != pid; poi = poi->next);
+
+	if (!poi) {
+		fprintf(stderr, "Could not find %d pid to remove from %d\n", pid, lid);
+		return 0;
+	}
+
+	if (poi->prev)
+		poi->prev->next = poi->next;
+	else
+		loc->poi_list = poi->next;
+
+	if (poi->next)
+		poi->next->prev = poi->prev;
+
+	poi->next->distance += poi->distance;
+	free(poi);
+
+	printf("A %d\n\tLocation = ", lid);
+	for (it = loc->poi_list; it; it = it->next) {
+		if (it->next)
+			printf("%d:%d:%d, ", it->pid, it->type, it->distance);
+		else
+			printf("%d:%d:%d", it->pid, it->type, it->distance);
+	}
+	printf("\nDONE\n");
+
 	return 1;
 }
 
