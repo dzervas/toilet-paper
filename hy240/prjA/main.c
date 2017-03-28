@@ -67,7 +67,7 @@ int add_location(int lid) {
 		locations_list = tmp;
 	else {
 		/* Search the list for the next bigger lid and shove it */
-		for (it = locations_list; it->next; prev = it, it = it->next) {
+		for (it = locations_list; it; prev = it, it = it->next) {
 			if (it->lid > lid) {
 				if (prev)
 					prev->next = tmp;
@@ -83,7 +83,7 @@ int add_location(int lid) {
 
 		/* If not done in the loop, place the node last */
 		if (!for_broken)
-			it->next = tmp;
+			prev->next = tmp;
 	}
 
 	printf("L %d\n\tLocations = ", lid);
@@ -294,6 +294,63 @@ int register_user(int uid) {
 *         false on failure
 */
 int interesting_poi(int uid, int upid) {
+	pusr_t *tmp, *it, *prev = NULL;
+	usr_t *usr;
+	unsigned char for_broken = 0;
+
+	/* Initialize the new node */
+	tmp = malloc(sizeof(pusr_t));
+
+	if (!tmp) {
+		fprintf(stderr, "Failed to allocate new node for pusr_t!\n");
+		return 0;
+	}
+
+	tmp->upid = upid;
+	tmp->next = NULL;
+
+	/* Search for the location based on lid */
+	for (usr = users_list; usr->uid != -1 && usr->uid != uid; usr = usr->next);
+
+	if (usr->uid == -1) {
+		fprintf(stderr, "Could not find %d uid to add poi %d\n", uid, upid);
+		return 0;
+	}
+
+	/* Place the new node */
+	if (!usr->interesting_poi)
+		/* In the start if list is empty */
+		usr->interesting_poi = tmp;
+	else {
+		/* Search the list for the next bigger lid and shove it */
+		for (it = usr->interesting_poi; it; prev = it, it = it->next) {
+			if (it->upid > upid) {
+				if (prev)
+					prev->next = tmp;
+				else
+					usr->interesting_poi = tmp;
+
+				/* Make current node next */
+				tmp->next = it;
+				for_broken = 1;
+				break;
+			}
+		}
+
+		/* If not done in the loop, place the node last */
+		if (!for_broken)
+			prev->next = tmp;
+	}
+
+	printf("I %d %d\n\tPOI = ", uid, upid);
+	for (it = usr->interesting_poi; it; it = it->next) {
+		if (it->next)
+			printf("%d, ", it->upid);
+		else
+			printf("%d", it->upid);
+	}
+	printf("\nDONE\n");
+
 	return 1;
 }
 
