@@ -309,7 +309,7 @@ int interesting_poi(int uid, int upid) {
 	tmp->upid = upid;
 	tmp->next = NULL;
 
-	/* Search for the location based on lid */
+	/* Search for the user based on uid */
 	for (usr = users_list; usr->uid != -1 && usr->uid != uid; usr = usr->next);
 
 	if (usr->uid == -1) {
@@ -365,6 +365,71 @@ int interesting_poi(int uid, int upid) {
 *         false on failure
 */
 int group_users(int uid1, int uid2, int uid3) {
+	usr_t *usr, *usr1, *usr2, *usr3;
+	pusr_t *poi1, *poi2, *poi3;
+	int *res = malloc(0), count = 0;
+
+	usr1 = usr2 = usr3 = NULL;
+
+	/* Search for the users based on uids */
+	for (usr = users_list; usr->uid != -1; usr = usr->next) {
+		if (usr->uid == uid1)
+			usr1 = usr;
+		if (usr->uid == uid2)
+			usr2 = usr;
+		if (usr->uid == uid3)
+			usr3 = usr;
+	}
+
+	if (!usr1 || !usr2 || !usr3) {
+		fprintf(stderr, "Could not find one of group users\n");
+		return 0;
+	}
+
+	poi1 = usr1->interesting_poi;
+	poi2 = usr2->interesting_poi;
+	poi3 = usr3->interesting_poi;
+
+	/* Search for the same upid in 3 lists.
+	 * Every iteration increases one of the 3 pointers (the lowest one),
+	 * or all of them if they are the same */
+	while (poi1 && poi2 && poi3) {
+		if (poi1->upid == poi2->upid && poi1->upid == poi3->upid) {
+			DPRINT("\t%d is same!\n", poi1->upid);
+
+			res = realloc(res, ++count * sizeof(int));
+			if (!res) {
+				fprintf(stderr, "Could not allocate mem for res\n");
+				return 0;
+			}
+			res[count-1] = poi1->upid;
+
+			poi1 = poi1->next;
+			poi2 = poi2->next;
+			poi3 = poi3->next;
+		} else if (poi1->upid < poi2->upid || poi1->upid < poi3->upid) {
+			if (poi1->next)
+				poi1 = poi1->next;
+		} else if (poi2->upid < poi1->upid || poi2->upid < poi3->upid) {
+			if (poi2->next)
+				poi2 = poi2->next;
+		} else if (poi3->upid < poi1->upid || poi3->upid < poi2->upid) {
+			if (poi3->next)
+				poi3 = poi3->next;
+		}
+	}
+
+	printf("G %d %d %d\n\tUser = ", uid1, uid2, uid3);
+	for (int i = 0; i < count; i++) {
+		if (i == count - 1)
+			printf("%d", res[i]);
+		else
+			printf("%d, ", res[i]);
+	}
+	printf("\nDONE\n");
+
+	free(res);
+
 	return 1;
 }
 
