@@ -24,6 +24,19 @@
 #define DPRINT(...)
 #endif /* DEBUG */
 
+/*_print_list(loc->poi_list, &loc->poi_list->pid - &loc->poi_list, &loc->poi_list->next - &loc->poi_list);*/
+/*void _print_list(void *list, unsigned int print_offset, unsigned int next_offset) {*/
+	/*void *it;*/
+
+	/*for (it = list; it; it = (it + next_offset)) {*/
+		/*if (it + next_offset)*/
+			/*printf("%d, ", (int) (it + print_offset));*/
+		/*else*/
+			/*printf("%d", (int) (it + print_offset));*/
+	/*}*/
+	/*printf("\nDONE\n");*/
+/*}*/
+
 /**
 * @brief Add a new location to the system
 *
@@ -36,10 +49,11 @@ int add_location(int lid) {
 	loc_t *tmp, *it, *prev = NULL;
 	unsigned char for_broken = 0;
 
+	/* Initialize the new node */
 	tmp = malloc(sizeof(loc_t));
 
 	if (!tmp) {
-		DPRINT("Failed to allocate new node for locations_list!\n");
+		fprintf(stderr, "Failed to allocate new node for loc_t!\n");
 		return 0;
 	}
 
@@ -47,30 +61,29 @@ int add_location(int lid) {
 	tmp->poi_list = NULL;
 	tmp->next = NULL;
 
-	if (!locations_list) {
-		DPRINT("First!");
+	/* Place the new node */
+	if (!locations_list)
+		/* In the start if list is empty */
 		locations_list = tmp;
-	} else {
+	else {
+		/* Search the list for the next bigger lid and shove it */
 		for (it = locations_list; it->next; prev = it, it = it->next) {
 			if (it->lid > lid) {
-				if (prev) {
+				if (prev)
 					prev->next = tmp;
-					DPRINT("Put after %d, before %d\n", prev->lid, it->lid);
-				} else {
+				else
 					locations_list = tmp;
-					DPRINT("Put first, before %d\n", it->lid);
-				}
 
+				/* Make current node next */
 				tmp->next = it;
 				for_broken = 1;
 				break;
 			}
 		}
 
-		if (!for_broken) {
-			DPRINT("Put after %d\n", it->lid);
+		/* If not done in the loop, place the node last */
+		if (!for_broken)
 			it->next = tmp;
-		}
 	}
 
 	printf("LID: %d\n\tLocations = ", lid);
@@ -97,6 +110,79 @@ int add_location(int lid) {
 *         false on failure
 */
 int add_poi_to_location(int pid, int type, int distance, int lid) {
+	poi_t *tmp, *it, *prev = NULL;
+	loc_t *loc;
+	unsigned char for_broken = 0;
+
+	/* Initialize the new node */
+	tmp = malloc(sizeof(poi_t));
+
+	if (!tmp) {
+		fprintf(stderr, "Failed to allocate new node for poi_t!\n");
+		return 0;
+	}
+
+	tmp->pid = pid;
+	tmp->distance = distance;
+	tmp->type = type;
+	tmp->next = NULL;
+	tmp->prev = NULL;
+
+	/* Search for the location based on lid */
+	for (loc = locations_list; loc && loc->lid != lid; loc = loc->next);
+
+	if (!loc) {
+		fprintf(stderr, "Could not find %d lid to add poi %d\n", lid, pid);
+		return 0;
+	}
+
+	/* Place the new node */
+	if (!loc->poi_list) {
+		/* In the start if list is empty */
+		loc->poi_list = tmp;
+	} else {
+		/* Search the list for the next bigger distance and shove it */
+		for (it = loc->poi_list; it; prev = it, it = it->next) {
+			/* Keep count of total and relative distance */
+			tmp->distance -= it->distance;
+
+
+			if (tmp->distance < 0) {
+				tmp->distance += it->distance;
+
+				if (it->prev)
+					it->prev->next = tmp;
+				else
+					loc->poi_list = tmp;
+
+				/* Make current node next and fix relative distance */
+				tmp->next = it;
+				tmp->prev = it->prev;
+				it->prev = tmp;
+				it->distance -= tmp->distance;
+
+				for_broken = 1;
+				break;
+			}
+		}
+
+		/* If not done in the loop, place the node last */
+		if (!for_broken) {
+			DPRINT("Put after %d\n", prev->pid);
+			prev->next = tmp;
+			tmp->prev = prev;
+		}
+	}
+
+	printf("LID: %d PID: %d\n\tLocations = ", lid, pid);
+	for (it = loc->poi_list; it; it = it->next) {
+		if (it->next)
+			printf("%d:%d:%d->%d, ", it->pid, it->type, it->distance, (it->prev) ? it->prev->pid : -1);
+		else
+			printf("%d:%d:%d->%d", it->pid, it->type, it->distance, (it->prev) ? it->prev->pid : -1);
+	}
+	printf("\nDONE\n");
+
 	return 1;
 }
 
