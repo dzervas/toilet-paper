@@ -33,6 +33,55 @@
 *         false on failure
 */
 int add_location(int lid) {
+	loc_t *tmp, *it, *prev = NULL;
+	unsigned char for_broken = 0;
+
+	tmp = malloc(sizeof(loc_t));
+
+	if (!tmp) {
+		DPRINT("Failed to allocate new node for locations_list!\n");
+		return 0;
+	}
+
+	tmp->lid = lid;
+	tmp->poi_list = NULL;
+	tmp->next = NULL;
+
+	if (!locations_list) {
+		DPRINT("First!");
+		locations_list = tmp;
+	} else {
+		for (it = locations_list; it->next; prev = it, it = it->next) {
+			if (it->lid > lid) {
+				if (prev) {
+					prev->next = tmp;
+					DPRINT("Put after %d, before %d\n", prev->lid, it->lid);
+				} else {
+					locations_list = tmp;
+					DPRINT("Put first, before %d\n", it->lid);
+				}
+
+				tmp->next = it;
+				for_broken = 1;
+				break;
+			}
+		}
+
+		if (!for_broken) {
+			DPRINT("Put after %d\n", it->lid);
+			it->next = tmp;
+		}
+	}
+
+	printf("LID: %d\n\tLocations = ", lid);
+	for (it = locations_list; it; it = it->next) {
+		if (it->next)
+			printf("%d, ", it->lid);
+		else
+			printf("%d", it->lid);
+	}
+	printf("\nDONE\n");
+
 	return 1;
 }
 
@@ -170,11 +219,6 @@ int main(int argc, char** argv)
 	char buff[BUFFER_SIZE], event;
 
 	/* Initialize global vars */
-	locations_list = malloc(sizeof(loc_t));
-	locations_list->lid = -1;
-	locations_list->poi_list = NULL;
-	locations_list->next = NULL;
-
 	users_sentinel = malloc(sizeof(usr_t));
 	users_list = users_sentinel;
 	users_sentinel->uid = -1;
@@ -197,7 +241,7 @@ int main(int argc, char** argv)
 	/* Read input file buff-by-buff and handle the events */
 	while (fgets(buff, BUFFER_SIZE, fin)) {
 
-		DPRINT("\n>>> Event: %s", buff);
+		/*DPRINT("\n>>> Event: %s", buff);*/
 
 		switch(buff[0]) {
 			/* Add location
