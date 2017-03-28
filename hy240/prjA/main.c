@@ -86,7 +86,7 @@ int add_location(int lid) {
 			it->next = tmp;
 	}
 
-	printf("LID: %d\n\tLocations = ", lid);
+	printf("L %d\n\tLocations = ", lid);
 	for (it = locations_list; it; it = it->next) {
 		if (it->next)
 			printf("%d, ", it->lid);
@@ -174,7 +174,7 @@ int add_poi_to_location(int pid, int type, int distance, int lid) {
 		}
 	}
 
-	printf("LID: %d PID: %d\n\tLocations = ", lid, pid);
+	printf("P %d %d %d\n\tLocations = ", pid, lid, distance);
 	for (it = loc->poi_list; it; it = it->next) {
 		if (it->next)
 			printf("%d:%d:%d->%d, ", it->pid, it->type, it->distance, (it->prev) ? it->prev->pid : -1);
@@ -198,7 +198,7 @@ int add_poi_to_location(int pid, int type, int distance, int lid) {
 int unavailable_poi(int pid, int lid) {
 	return 1;
 }
-        
+
 /**
 * @brief Register user
 *
