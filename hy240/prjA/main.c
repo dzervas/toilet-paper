@@ -75,10 +75,9 @@ int add_location(int lid) {
 
 	printf("L %d\n\tLocations = ", lid);
 	for (it = locations_list; it; it = it->next) {
+		printf("%d", it->lid);
 		if (it->next)
-			printf("%d, ", it->lid);
-		else
-			printf("%d", it->lid);
+			printf(", ");
 	}
 	printf("\nDONE\n");
 
@@ -163,10 +162,9 @@ int add_poi_to_location(int pid, int type, int distance, int lid) {
 
 	printf("P %d %d %d\n\tLocation = ", pid, lid, distance);
 	for (it = loc->poi_list; it; it = it->next) {
+		printf("%d:%d:%d", it->pid, it->type, it->distance);
 		if (it->next)
-			printf("%d:%d:%d, ", it->pid, it->type, it->distance);
-		else
-			printf("%d:%d:%d", it->pid, it->type, it->distance);
+			printf(", ");
 	}
 	printf("\nDONE\n");
 
@@ -214,10 +212,9 @@ int unavailable_poi(int pid, int lid) {
 
 	printf("A %d\n\tLocation = ", lid);
 	for (it = loc->poi_list; it; it = it->next) {
+		printf("%d:%d:%d", it->pid, it->type, it->distance);
 		if (it->next)
-			printf("%d:%d:%d, ", it->pid, it->type, it->distance);
-		else
-			printf("%d:%d:%d", it->pid, it->type, it->distance);
+			printf(", ");
 	}
 	printf("\nDONE\n");
 
@@ -261,10 +258,9 @@ int register_user(int uid) {
 
 	printf("R %d\n\tUsers = ", uid);
 	for (it = users_list; it->uid != -1; it = it->next) {
+		printf("%d", it->uid);
 		if (it->next->uid != -1)
-			printf("%d, ", it->uid);
-		else
-			printf("%d", it->uid);
+			printf(", ");
 	}
 	printf("\nDONE\n");
 
@@ -331,10 +327,9 @@ int interesting_poi(int uid, int upid) {
 
 	printf("I %d %d\n\tPOI = ", uid, upid);
 	for (it = usr->interesting_poi; it; it = it->next) {
+		printf("%d", it->upid);
 		if (it->next)
-			printf("%d, ", it->upid);
-		else
-			printf("%d", it->upid);
+			printf(", ");
 	}
 	printf("\nDONE\n");
 
@@ -408,10 +403,9 @@ int group_users(int uid1, int uid2, int uid3) {
 
 	printf("G %d %d %d\n\tUser = ", uid1, uid2, uid3);
 	for (int i = 0; i < count; i++) {
-		if (i == count - 1)
-			printf("%d", res[i]);
-		else
-			printf("%d, ", res[i]);
+		printf("%d", res[i]);
+		if (i != count - 1)
+			printf(", ");
 	}
 	printf("\nDONE\n");
 
@@ -445,18 +439,17 @@ int print_locations() {
 	loc_t *it;
 	poi_t *pit;
 
-	printf("X\nLOCATIONS:");
+	printf("X\n");
 	for (it = locations_list; it; it = it->next) {
 		if (!it->poi_list)
 			continue;
 
-		printf("\n\tLocation = ");
+		printf("\n\t%d = ", it->lid);
 
 		for (pit = it->poi_list; pit; pit = pit->next) {
+			printf("%d:%d:%d", pit->pid, pit->type, pit->distance);
 			if (pit->next)
-				printf("%d:%d:%d, ", pit->pid, pit->type, pit->distance);
-			else
-				printf("%d:%d:%d", pit->pid, pit->type, pit->distance);
+				printf(", ");
 		}
 	}
 	printf("\nDONE\n");
@@ -471,6 +464,24 @@ int print_locations() {
 *         false on failure
 */
 int print_users() {
+	usr_t *it;
+	pusr_t *pit;
+
+	printf("Y\n");
+	for (it = users_list; it->uid != -1; it = it->next) {
+		if (!it->interesting_poi)
+			continue;
+
+		printf("\n\t%d = ", it->uid);
+
+		for (pit = it->interesting_poi; pit; pit = pit->next) {
+			printf("%d", pit->upid);
+			if (pit->next)
+				printf(", ");
+		}
+	}
+	printf("\nDONE\n");
+
 	return 1;
 }
 
@@ -483,6 +494,25 @@ int print_users() {
 *         false on failure
 */
 int search_user(int uid) {
+	usr_t *usr;
+	pusr_t *it;
+
+	/* Search for the user based on uid */
+	for (usr = users_list; usr->uid != -1 && usr->uid != uid; usr = usr->next);
+
+	if (usr->uid == -1) {
+		fprintf(stderr, "Could not find %d uid\n", uid);
+		return 0;
+	}
+
+	printf("Z %d\n\tInteresting POIs: ", uid);
+	for (it = usr->interesting_poi; it; it = it->next) {
+		printf("%d", it->upid);
+		if (it->next)
+			printf(", ");
+	}
+	printf("\nDONE\n");
+
 	return 1;
 }
 
