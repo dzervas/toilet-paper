@@ -16,7 +16,7 @@
 
 /* Uncomment the following line to enable debugging prints
  * or comment to disable it */
-#define DEBUG
+/*#define DEBUG*/
 
 #ifdef DEBUG
 #define DPRINT(...) fprintf(stderr, __VA_ARGS__);
@@ -426,6 +426,74 @@ int group_users(int uid1, int uid2, int uid3) {
 *         false on failure
 */
 int sightseeing_distance(int lid, int pid1, int pid2, int pid3) {
+	loc_t *loc;
+	poi_t *array[3] = { NULL }, *it;
+	unsigned int i, sdist = 0, left[2] = { 0 };
+
+	/* Search for the location based on lid */
+	for (loc = locations_list; loc && loc->lid != lid; loc = loc->next);
+
+	if (!loc) {
+		fprintf(stderr, "Could not find %d lid\n", lid);
+		return 0;
+	}
+
+	/* Search for the 3 PIDs.
+	 * If the previous PID is not found, that means that the PID found
+	 * is left of previous pid. Also measure the distance until pid1,
+	 * so then we can calculate the distance with next/prev pointers,
+	 * according to the saved direction. */
+	for (it = loc->poi_list; it; it = it->next) {
+		if (!array[0])
+			sdist += it->distance;
+
+		if (it->pid == pid1) {
+			array[0] = it;
+		}
+
+		if (it->pid == pid2) {
+			array[1] = it;
+			if (!array[0])
+				left[0] = 1;
+			DPRINT("pid2 is left of pid1: %d\n", left[0]);
+		}
+
+		if (it->pid == pid3) {
+			array[2] = it;
+			if (!array[1])
+				left[1] = 1;
+			DPRINT("pid3 is left of pid2: %d\n", left[1]);
+		}
+	}
+
+	if (!array[0] || !array[1] || !array[2]) {
+		fprintf(stderr, "Could not find pids\n");
+		return 0;
+	}
+
+	/* Measure the distance 1->2 & 2->3 */
+	for (it = array[0]; it->pid != pid2;) {
+		sdist += it->distance;
+		if (left[0])
+			it = it->prev;
+		else
+			it = it->next;
+	}
+
+	for (it = array[1]; it->pid != pid3;) {
+		sdist += it->distance;
+		if (left[1])
+			it = it->prev;
+		else
+			it = it->next;
+	}
+
+	 /* Distance of 2nd element is added twice from 1->2 and 2->3 */
+	/*sdist -= array[1]->distance;*/
+
+	printf("B %d %d %d %d\n\tTotal distance: %d\nDONE",
+			lid, pid1, pid2, pid3, sdist);
+
 	return 1;
 }
 
