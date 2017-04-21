@@ -2,11 +2,30 @@
 
 #include <dlfcn.h>
 #include <stdio.h>
+#include <time.h>
+#include <unistd.h>
 
 void log_action(const char *path, unsigned const char is_access) {
-	printf("file %s was %s\n",
+	char ttime[80], tdate[80];
+	struct tm *timeinfo;
+	time_t rawtime;
+
+	/* Get time */
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+
+	strftime(ttime, 80, "%T", timeinfo);
+	strftime(tdate, 80, "%F", timeinfo);
+
+	printf("UID\tfile_name\tdate\t\ttime\t\topen\taction_denied\thash\n");
+	printf("%d\t%s\t%s\t%s\t%d\t%d\t\t%s\n",
+			(unsigned int) getuid(),
 			path,
-			(is_access)?"accessed":"modified");
+			tdate,
+			ttime,
+			is_access,
+			0,
+			"hash");
 }
 
 void plog_action(int ptr, unsigned const char is_access) {
