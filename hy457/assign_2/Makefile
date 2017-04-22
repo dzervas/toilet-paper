@@ -1,7 +1,7 @@
 CC = gcc
 DBUG = -g
 CCFLAGS = -Wall
-TA_CCFLAGS = -fPIC -shared -ldl
+TA_CCFLAGS = -fPIC -shared -ldl -lssl -lcrypto
 TB_CCFLAGS = -fPIC -shared -ldl
 
 TARGETS = Task_A main
