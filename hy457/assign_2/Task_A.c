@@ -2,6 +2,8 @@
 
 #include <dlfcn.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <unistd.h>
 #include <openssl/md5.h>
@@ -9,16 +11,19 @@
 
 void log_action(const char *path, unsigned const char is_access) {
 	FILE *(*_fopen)(const char*, const char*);
-	char ttime[80], tdate[80];
+	char ttime[80], tdate[80], abspath[1024];
 	struct stat statinfo;
 	struct tm *timeinfo;
 	time_t rawtime;
-	unsigned char hash[MD5_DIGEST_LENGTH];
 
 	FILE *fp;
 	char buffer[1024];
+	unsigned char hash[MD5_DIGEST_LENGTH];
 	int md5count;
 	MD5_CTX mdContext;
+
+	/* Get absolute path */
+	realpath(path, abspath);
 
 	/* Get time */
 	time(&rawtime);
@@ -28,14 +33,18 @@ void log_action(const char *path, unsigned const char is_access) {
 	strftime(tdate, 80, "%F", timeinfo);
 
 	/* Print the actual log */
-	printf("UID\tfile_name\tdate\t\ttime\t\topen\taction_denied\thash\n");
-	printf("%d\t%s\t%s\t%s\t%d\t%d\t\t", (unsigned int) getuid(), path, tdate,
-			ttime, is_access, -1 * stat(path, &statinfo));
+	printf("UID\tfile_name");
+
+	for (unsigned long i = 0; i < (strlen(abspath)/8); i++) printf("\t");
+
+	printf("date\t\ttime\t\topen\taction_denied\thash\n");
+	printf("%d\t%s\t%s\t%s\t%d\t%d\t\t", (unsigned int) getuid(), abspath, tdate,
+			ttime, is_access, -1 * stat(abspath, &statinfo));
 
 	/* Calculate and print hash */
 	if (is_access) {
 		_fopen = dlsym(RTLD_NEXT, "fopen");
-		fp = _fopen(path, "rb");
+		fp = _fopen(abspath, "rb");
 
 		MD5_Init(&mdContext);
 		while ((md5count = fread(buffer, 1, 1024, fp)))
@@ -50,11 +59,18 @@ void log_action(const char *path, unsigned const char is_access) {
 }
 
 void plog_action(int ptr, unsigned const char is_access) {
-	log_action("(pointer)", is_access);
+	char path[1024], proclink[1024];
+	ssize_t size;
+
+	sprintf(proclink, "/proc/self/fd/%d", ptr);
+	size = readlink(proclink, path, 1024);
+	path[size] = '\0';
+
+	log_action(path, is_access);
 }
 
 void flog_action(const void *ptr, unsigned const char is_access) {
-	log_action("(fpointer)", is_access);
+	plog_action(fileno((FILE *) ptr), is_access);
 }
 
 int open(const char *path, int oflag, ...) {
