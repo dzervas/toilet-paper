@@ -4,7 +4,7 @@ CCFLAGS = -Wall
 TA_CCFLAGS = -fPIC -shared -ldl -lssl -lcrypto
 #TB_CCFLAGS = -fPIC -shared -ldl
 
-TARGETS = Task_A main
+TARGETS = Task_A main Task_B
 
 all: $(TARGETS)
 
