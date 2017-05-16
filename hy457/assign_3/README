@@ -1,0 +1,5 @@
+1. (Good way): `bg` in bash. Yeap, it'll work.
+   (Bad way): Threads. Dear god. No. It won't work. It needs goat blood.
+
+2. On screen keyboard (could be also tapped, image recognition on screenshot +
+   mouse/touch event tapping). Or don't execute random binaries (duh).
