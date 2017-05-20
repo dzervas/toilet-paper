@@ -204,10 +204,11 @@ int unavailable_poi(int pid, int lid) {
 	else
 		loc->poi_list = poi->next;
 
-	if (poi->next)
+	if (poi->next) {
 		poi->next->prev = poi->prev;
+		poi->next->distance += poi->distance;
+	}
 
-	poi->next->distance += poi->distance;
 	free(poi);
 
 	printf("A %d\n\tLocation = ", lid);
@@ -390,14 +391,11 @@ int group_users(int uid1, int uid2, int uid3) {
 			poi2 = poi2->next;
 			poi3 = poi3->next;
 		} else if (poi1->upid < poi2->upid || poi1->upid < poi3->upid) {
-			if (poi1->next)
-				poi1 = poi1->next;
+			poi1 = poi1->next;
 		} else if (poi2->upid < poi1->upid || poi2->upid < poi3->upid) {
-			if (poi2->next)
-				poi2 = poi2->next;
+			poi2 = poi2->next;
 		} else if (poi3->upid < poi1->upid || poi3->upid < poi2->upid) {
-			if (poi3->next)
-				poi3 = poi3->next;
+			poi3 = poi3->next;
 		}
 	}
 
