@@ -68,4 +68,9 @@ struct user_poi
   struct user_poi *rc;
 };
 
+typedef struct location loc_t;
+typedef struct poi poi_t;
+typedef struct user usr_t;
+typedef struct user_poi pusr_t;
+
 #endif /* GEO_H_ */
