@@ -10,8 +10,6 @@ public class MagicSquareChecker {
 		for (int i = 0; i < msiz; i++)
 			sum += s[k][i];
 
-		System.out.println("sumOfRow: row " + k + " = " + sum);
-
 		return sum;
 	}
 
@@ -20,8 +18,6 @@ public class MagicSquareChecker {
 
 		for (int i = 0; i < msiz; i++)
 			sum += s[k][i];
-
-		System.out.println("sumOfColumn: row " + k + " = " + sum);
 
 		return sum;
 	}
@@ -32,8 +28,6 @@ public class MagicSquareChecker {
 		for (int i = 0; i < msiz; i++)
 			sum += s[i][i];
 
-		System.out.println("sumOfDiagonal1  = " + sum);
-
 		return sum;
 	}
 
@@ -42,8 +36,6 @@ public class MagicSquareChecker {
 
 		for (int i = (msiz - 1); i >= 0; i--)
 			sum += s[i][i];
-
-		System.out.println("sumOfDiagonal2  = " + sum);
 
 		return sum;
 	}
