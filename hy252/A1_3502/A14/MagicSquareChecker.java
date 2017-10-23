@@ -1,8 +1,10 @@
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 public class MagicSquareChecker {
 	static int msiz, mnum;
@@ -63,12 +65,12 @@ public class MagicSquareChecker {
 		return true;
 	}
 
-	public static void main(String[] args) throws java.io.FileNotFoundException {
+	public static void main(String[] args) throws java.io.IOException, java.net.MalformedURLException {
 		boolean[] dupCheck = new boolean[8 * Integer.BYTES];
 		int[][] table;
 		int i, j;
 		JFileChooser fc = new JFileChooser();
-		Scanner line;
+		Scanner line, in;
 
 		fc.setDialogTitle("Select a file");
 		if (fc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
@@ -76,7 +78,11 @@ public class MagicSquareChecker {
 		}
 
 		File file = fc.getSelectedFile();
-		Scanner in = new Scanner(new FileReader(file.getAbsolutePath()));
+		try {
+			in = new Scanner(new FileReader(file.getAbsolutePath()));
+		} catch (java.io.FileNotFoundException e) {
+			in = new Scanner(new URL(JOptionPane.showInputDialog("Give me a URL. File not found... ")).openStream());
+		}
 
 		table = new int[10][10];
 
